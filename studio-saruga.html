@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SARUGA STUDIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --black: #050505;
+  --white: #ffffff;
+  --gray: #666;
+  --serif: 'Cormorant', Georgia, serif;
+  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --nav-h: 56px;
+}
+html { font-size: 16px; }
+body {
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--mono);
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 200;
+  background: var(--black);
+  border-bottom: none;
+}
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--white); }
+
+.nav-back {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  font-family: var(--mono);
+}
+.nav-back:hover { color: var(--white); }
+.nav-back.visible { display: flex; }
+
+/* SECTIONS */
+.section { display: none; padding-top: var(--nav-h); min-height: 100vh; }
+.section.visible { display: block; animation: fadeUp 0.3s ease both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* PROJECTS LIST */
+#projects { padding-top: calc(var(--nav-h) + 5vh); }
+.project-list {
+  padding: 2rem 0 6rem;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  grid-auto-flow: dense;
+  gap: 5rem;
+  align-items: start;
+  min-height: calc(100vh - var(--nav-h) - 4rem);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.project-item {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  cursor: pointer;
+  min-width: 0;
+  background: transparent;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  transform: translate(var(--offset-x, 0px), var(--offset-y, 0px));
+}
+.project-item:hover {
+  transform: translate(calc(var(--offset-x, 0px)), calc(var(--offset-y, 0px) - 6px));
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.12);
+}
+.project-thumb {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+.project-info {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.1rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.45) 100%);
+  color: var(--white);
+}
+.project-title {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 300;
+  line-height: 1.15;
+}
+.project-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+@media (max-width: 700px) {
+  .project-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 1rem;
+    padding: 1.5rem 1rem 4rem;
+    min-height: auto;
+  }
+  .project-item {
+    transform: none;
+  }
+  .project-info {
+    position: relative;
+    background: rgba(255,255,255,0.95);
+    color: var(--black);
+  }
+}
+
+/* HOVER IMG */
+.hover-img {
+  position: fixed;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  z-index: 150;
+  width: 260px;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+}
+.hover-img.visible { opacity: 1; }
+
+/* DETAIL */
+#detail {
+  display: none;
+  padding-top: var(--nav-h);
+  height: 100vh;
+  overflow: hidden;
+}
+#detail.visible {
+  display: flex;
+  flex-direction: row;
+  animation: fadeUp 0.35s ease both;
+}
+
+.detail-left {
+  height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+  padding: 3.5rem 3rem 6rem 2rem;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  width: 50%;
+  min-width: 240px;
+  max-width: calc(100% - 240px);
+}
+.detail-left::-webkit-scrollbar { display: none; }
+
+/* RESIZER */
+.detail-resizer {
+  width: 13px;
+  height: calc(100vh - var(--nav-h));
+  flex-shrink: 0;
+  cursor: col-resize;
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.detail-resizer::before {
+  content: '';
+  width: 1px;
+  background: var(--black);
+  transition: background 0.15s, width 0.15s;
+  flex-shrink: 0;
+}
+.detail-resizer:hover::before,
+.detail-resizer.dragging::before {
+  width: 3px;
+  background: var(--black);
+}
+
+.detail-header { margin-bottom: 2.8rem; border-bottom: 1px solid var(--black); padding-bottom: 1.5rem; }
+.detail-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 0.8rem;
+}
+.detail-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.05;
+  margin-bottom: 1.2rem;
+}
+.detail-info {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+
+.essay-block { margin-bottom: 1.8rem; }
+.essay-block p {
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  line-height: 1.88;
+  font-weight: 300;
+}
+.essay-block p + p { margin-top: 1rem; }
+
+.essay-img {
+  width: 100%;
+  aspect-ratio: 3/2;
+  object-fit: cover;
+  display: block;
+  margin: 2.2rem 0 0.5rem;
+}
+.essay-img-caption {
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--gray);
+  margin-bottom: 2rem;
+}
+.essay-pull {
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.45;
+  border-left: 1.5px solid var(--black);
+  padding-left: 1.2rem;
+  margin: 2.5rem 0;
+}
+
+/* GALLERY (right col) */
+.detail-right {
+  height: calc(100vh - var(--nav-h));
+  overflow-y: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 240px;
+  padding: 2.5rem 3rem 8rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.8rem;
+  box-sizing: border-box;
+}
+.detail-right::-webkit-scrollbar { display: none; }
+.gallery-img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ABOUT */
+#about { padding: calc(var(--nav-h) + 8vh) 2rem 8vh; max-width: 680px; }
+.about-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); margin-bottom: 3rem; }
+.about-text { font-family: var(--serif); font-size: clamp(1.45rem, 2.5vw, 2rem); font-weight: 300; line-height: 1.6; margin-bottom: 3.5rem; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; border-top: 1px solid var(--black); padding-top: 2rem; }
+.about-col-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.8rem; }
+.about-col-content { font-size: 0.78rem; line-height: 2; letter-spacing: 0.02em; }
+.contact-link {
+  display: inline-block; margin-top: 2.5rem;
+  font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--black); text-decoration: none;
+  border-bottom: 1px solid var(--black); padding-bottom: 2px;
+  transition: opacity 0.2s;
+}
+.contact-link:hover { opacity: 0.4; }
+
+/* WRITINGS */
+#writings { padding: calc(var(--nav-h) + 5vh) 2rem 8vh; }
+.writings-list { max-width: 680px; }
+.writing-item {
+  border-top: 1px solid var(--black);
+  padding: 1.6rem 0;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: start; gap: 2rem;
+  transition: opacity 0.2s; cursor: pointer;
+}
+.writing-item:last-child { border-bottom: 1px solid var(--black); }
+.writings-list:hover .writing-item { opacity: 0.2; }
+.writings-list:hover .writing-item:hover { opacity: 1; }
+.writing-title { font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 300; line-height: 1.25; margin-bottom: 0.4rem; }
+.writing-desc { font-size: 0.7rem; color: var(--gray); letter-spacing: 0.04em; line-height: 1.7; max-width: 420px; }
+.writing-date { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); white-space: nowrap; padding-top: 0.25rem; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--black); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+footer span { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); text-transform: uppercase; }
+
+@media (max-width: 700px) {
+  #detail.visible { flex-direction: column; }
+  .detail-right { display: none; }
+  .detail-resizer { display: none; }
+  .detail-left { border-right: none; padding-right: 1.2rem; width: 100% !important; max-width: 100%; }
+  .hover-img { display: none; }
+  .about-grid { grid-template-columns: 1fr; }
+  nav { padding: 0 1.2rem; }
+  .nav-links { gap: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" onclick="goHome()">SARUGA STUDIO</a>
+  <div style="display:flex;align-items:center;">
+    <button class="nav-back" id="navBack" onclick="goBack()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M8 2L4 6l4 4"/>
+      </svg>
+      &nbsp;Projects
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a onclick="show('projects')" id="nav-projects" class="active">Projects</a></li>
+      <li><a onclick="show('about')"    id="nav-about">About</a></li>
+      <li><a onclick="show('writings')" id="nav-writings">Writings</a></li>
+    </ul>
+  </div>
+</nav>
+
+<img class="hover-img" id="hoverImg" src="" alt="">
+
+<!-- PROJECTS LIST -->
+<section class="section visible" id="projects">
+  <div class="project-list">
+</div>
+</section>
+
+<!-- DETAIL VIEW -->
+<section id="detail">
+  <div class="detail-left"  id="detailLeft"></div>
+  <div class="detail-resizer" id="detailResizer"></div>
+  <div class="detail-right" id="detailRight"></div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <p class="about-label">Studio Saruga — Seoul, Korea</p>
+  <p class="about-text">We are an architecture studio interested in the slow and the specific — buildings that belong to their place, their program, and the people who inhabit them.</p>
+  <div class="about-grid">
+    <div>
+      <p class="about-col-label">Services</p>
+      <p class="about-col-content">Architecture<br>Interior Design<br>Landscape<br>Urban Research<br>Consulting</p>
+    </div>
+    <div>
+      <p class="about-col-label">Contact</p>
+      <p class="about-col-content">hello@studiosaruga.com<br>+82 02 000 0000<br><br>Seoul, Korea</p>
+    </div>
+  </div>
+  <a class="contact-link" href="mailto:hello@studiosaruga.com">Get in touch →</a>
+</section>
+
+<!-- WRITINGS -->
+<section class="section" id="writings">
+  <div class="writings-list">
+    <div class="writing-item">
+      <div><p class="writing-title">On the Thickness of Walls</p><p class="writing-desc">A meditation on material weight, insulation, and what we mean when we speak of shelter.</p></div>
+      <span class="writing-date">2024. 11</span>
+    </div>
+    <div class="writing-item">
+      <div><p class="writing-title">Seoul's Remaining Courtyard Houses</p><p class="writing-desc">Notes from a survey of hanok adaptations in Seochon and Bukchon — what survives and why.</p></div>
+      <span class="writing-date">2024. 06</span>
+    </div>
+    <div class="writing-item">
+      <div><p class="writing-title">Material as Argument</p><p class="writing-desc">The choice of concrete, wood, or stone is never neutral. On the rhetoric embedded in surface.</p></div>
+      <span class="writing-date">2023. 09</span>
+    </div>
+    <div class="writing-item">
+      <div><p class="writing-title">Small Buildings, Large Questions</p><p class="writing-desc">Why the residential scale remains the most demanding — and most honest — test of architecture.</p></div>
+      <span class="writing-date">2022. 03</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 SARUGA STUDIO</span>
+  <span>Seoul, Korea</span>
+</footer>
+
+<script type="module">
+import { PROJECTS } from './projects.js';
+
+
+
+const sections = ['projects','about','writings'];
+
+function show(id) {
+  document.getElementById('detail').classList.remove('visible');
+  document.getElementById('navBack').classList.remove('visible');
+  document.getElementById('navLinks').style.display = '';
+  sections.forEach(s => {
+    document.getElementById(s).classList.remove('visible');
+    document.getElementById('nav-' + s).classList.remove('active');
+  });
+  document.getElementById(id).classList.add('visible');
+  document.getElementById('nav-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goHome() { show('projects'); }
+function goBack() { show('projects'); }
+
+window.show = show;
+window.goHome = goHome;
+window.goBack = goBack;
+
+const projectList = document.querySelector('.project-list');
+
+function renderProjectGrid() {
+  const shuffled = PROJECTS
+    .map((project, id) => ({ project, id }))
+    .sort(() => Math.random() - 0.5);
+
+  const spans = [2, 2, 3, 3];
+
+  projectList.innerHTML = shuffled.map(({ project, id }, index) => {
+    const cols = spans[Math.floor(Math.random() * spans.length)];
+    const offsetX = Math.round((Math.random() - 0.5) * 40);
+    const offsetY = Math.round((Math.random() - 0.5) * 30);
+    return `
+      <button class="project-item" type="button" data-id="${id}" data-img="${project.gallery?.[0] || ''}" style="grid-column: span ${cols}; --offset-x: ${offsetX}px; --offset-y: ${offsetY}px;">
+        <img class="project-thumb" src="${project.gallery?.[0] || ''}" alt="${project.title}" loading="lazy">
+        <div class="project-info">
+          <span class="project-label">${project.type}</span>
+          <span class="project-title">${project.title}</span>
+        </div>
+      </button>
+    `;
+  }).join('');
+
+  attachProjectItemEvents();
+}
+
+function attachProjectItemEvents() {
+  document.querySelectorAll('.project-item').forEach(item => {
+    item.addEventListener('click', () => {
+      hoverImg.classList.remove('visible');
+      openProject(parseInt(item.dataset.id, 10));
+    });
+  });
+}
+
+renderProjectGrid();
+
+function openProject(id) {
+  const p = PROJECTS[id];
+  if (!p) return;
+
+  let L = `<div class="detail-header">
+    <p class="detail-label">${p.type} — ${p.location}</p>
+    <h1 class="detail-title">${p.title}</h1>
+    <div class="detail-info"><span>${p.year}</span><span>${p.type}</span><span>${p.location}</span></div>
+  </div>`;
+
+  p.essay.forEach(b => {
+    if (b.kind === 'text') {
+      L += `<div class="essay-block"><p>${b.content}</p></div>`;
+    } else if (b.kind === 'img') {
+      L += `<img class="essay-img" src="${b.src}" alt="">`;
+      if (b.caption) L += `<p class="essay-img-caption">${b.caption}</p>`;
+    } else if (b.kind === 'pull') {
+      L += `<blockquote class="essay-pull">${b.content}</blockquote>`;
+    }
+  });
+
+  const R = p.gallery.map(src => `<img class="gallery-img" src="${src}" alt="" loading="lazy">`).join('');
+
+  document.getElementById('detailLeft').innerHTML  = L;
+  document.getElementById('detailRight').innerHTML = R;
+
+  sections.forEach(s => {
+    document.getElementById(s).classList.remove('visible');
+    document.getElementById('nav-' + s).classList.remove('active');
+  });
+
+  document.getElementById('detail').classList.add('visible');
+  document.getElementById('navBack').classList.add('visible');
+  document.getElementById('navLinks').style.display = 'none';
+  document.getElementById('detailLeft').scrollTop  = 0;
+  document.getElementById('detailRight').scrollTop = 0;
+}
+
+// Resizer drag
+const resizer   = document.getElementById('detailResizer');
+const leftPanel = document.getElementById('detailLeft');
+const detail    = document.getElementById('detail');
+let isResizing  = false;
+
+resizer.addEventListener('mousedown', e => {
+  isResizing = true;
+  resizer.classList.add('dragging');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', e => {
+  if (!isResizing) return;
+  const rect = detail.getBoundingClientRect();
+  const newW = e.clientX - rect.left;
+  const total = rect.width - 5; // subtract resizer width
+  const pct = Math.min(Math.max(newW / total * 100, 20), 80);
+  leftPanel.style.width = pct + '%';
+});
+
+document.addEventListener('mouseup', () => {
+  if (!isResizing) return;
+  isResizing = false;
+  resizer.classList.remove('dragging');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+});
+
+// Touch support
+resizer.addEventListener('touchstart', e => {
+  isResizing = true;
+  resizer.classList.add('dragging');
+});
+document.addEventListener('touchmove', e => {
+  if (!isResizing) return;
+  const touch = e.touches[0];
+  const rect = detail.getBoundingClientRect();
+  const newW = touch.clientX - rect.left;
+  const total = rect.width - 5;
+  const pct = Math.min(Math.max(newW / total * 100, 20), 80);
+  leftPanel.style.width = pct + '%';
+});
+document.addEventListener('touchend', () => {
+  isResizing = false;
+  resizer.classList.remove('dragging');
+});
+let mx = 0, my = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  let x = mx + 20, y = my - 40;
+  if (x + 260 > window.innerWidth)  x = mx - 280;
+  if (y + 195 > window.innerHeight) y = my - 195;
+  hoverImg.style.left = x + 'px';
+  hoverImg.style.top  = y + 'px';
+});
+
+document.querySelectorAll('.project-item').forEach(item => {
+  item.addEventListener('mouseenter', () => {
+    if (item.dataset.img) { hoverImg.src = item.dataset.img; hoverImg.classList.add('visible'); }
+  });
+  item.addEventListener('mouseleave', () => hoverImg.classList.remove('visible'));
+});
+</script>
+</body>
+</html>
