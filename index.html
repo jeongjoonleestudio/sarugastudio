@@ -34,6 +34,12 @@
 </div>
 </section>
 
+<!-- ZOOM CONTROLS -->
+<div class="zoom-controls" id="zoomControls">
+  <button class="zoom-btn" id="zoomOut" title="축소">−</button>
+  <button class="zoom-btn" id="zoomIn"  title="확대">+</button>
+</div>
+
 <!-- DETAIL VIEW -->
 <section id="detail">
   <div class="detail-left"  id="detailLeft"></div>
@@ -77,7 +83,24 @@
 <script type="module">
 import { PROJECTS } from './projects.js';
 
+// ZOOM
+const MIN_COLS = 3;
+const MAX_COLS = 8;
+let gridCols = MAX_COLS;
 
+const zoomInBtn  = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
+
+function setGridCols(n) {
+  gridCols = Math.min(MAX_COLS, Math.max(MIN_COLS, n));
+  document.querySelector('.project-list').style.setProperty('--grid-cols', gridCols);
+  zoomInBtn.disabled  = gridCols === MIN_COLS;
+  zoomOutBtn.disabled = gridCols === MAX_COLS;
+}
+
+zoomInBtn.addEventListener('click',  () => setGridCols(gridCols - 1));
+zoomOutBtn.addEventListener('click', () => setGridCols(gridCols + 1));
+setGridCols(MAX_COLS);
 
 const sections = ['projects','about','writings'];
 
@@ -85,6 +108,7 @@ function show(id) {
   document.getElementById('detail').classList.remove('visible');
   document.getElementById('navBack').classList.remove('visible');
   document.getElementById('navLinks').style.display = '';
+  document.getElementById('zoomControls').style.display = id === 'projects' ? '' : 'none';
   sections.forEach(s => {
     document.getElementById(s).classList.remove('visible');
     document.getElementById('nav-' + s).classList.remove('active');
@@ -165,6 +189,7 @@ function openProject(id) {
   document.getElementById('detail').classList.add('visible');
   document.getElementById('navBack').classList.add('visible');
   document.getElementById('navLinks').style.display = 'none';
+  document.getElementById('zoomControls').style.display = 'none';
   document.getElementById('detailLeft').scrollTop  = 0;
   document.getElementById('detailRight').scrollTop = 0;
 }
