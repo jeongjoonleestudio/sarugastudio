@@ -82,7 +82,13 @@ import { PROJECTS } from './projects.js';
 
 const sections = ['projects','about','writings'];
 
-function show(id) {
+const base = (() => {
+  const p = location.pathname;
+  return p.endsWith('/') ? p : p.substring(0, p.lastIndexOf('/') + 1);
+})();
+
+function show(id, push = true) {
+  if (push) history.pushState(null, '', base + (id === 'projects' ? '' : id));
   document.getElementById('detail').classList.remove('visible');
   document.getElementById('navBack').classList.remove('visible');
   document.getElementById('navLinks').style.display = '';
@@ -179,9 +185,10 @@ function attachProjectItemEvents() {
 
 renderProjectGrid();
 
-function openProject(id) {
+function openProject(id, push = true) {
   const p = PROJECTS[id];
   if (!p) return;
+  if (push) history.pushState(null, '', base + 'project/' + id);
 
   let L = `<div class="detail-header">
     <p class="detail-label">${p.type} — ${p.location}</p>
@@ -366,6 +373,30 @@ function openWriting(id) {
 }
 
 renderWritings();
+
+// Initial routing from URL
+{
+  const path = decodeURIComponent(location.pathname.slice(base.length));
+  if (path === 'about' || path === 'writings') {
+    show(path, false);
+  } else if (path.startsWith('project/')) {
+    const id = parseInt(path.slice(8), 10);
+    if (!isNaN(id)) openProject(id, false);
+  }
+  history.replaceState(null, '', location.href);
+}
+
+window.addEventListener('popstate', () => {
+  const path = decodeURIComponent(location.pathname.slice(base.length));
+  if (!path || path === 'projects') {
+    show('projects', false);
+  } else if (path === 'about' || path === 'writings') {
+    show(path, false);
+  } else if (path.startsWith('project/')) {
+    const id = parseInt(path.slice(8), 10);
+    if (!isNaN(id)) openProject(id, false);
+  }
+});
 
 // Writings resizer
 const writingsResizer = document.getElementById('writingsResizer');
