@@ -186,7 +186,7 @@ nav {
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: 0;
+  border-radius: 50%;
   background: var(--black);
   color: var(--white);
   font-family: var(--sans);
@@ -203,7 +203,7 @@ nav {
   content: none;
 }
 .view-toggle.list-mode {
-  border-radius: 50%;
+  border-radius: 0;
 }
 .view-toggle.list-mode::before {
   content: none;
