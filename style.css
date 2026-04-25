@@ -195,7 +195,7 @@ nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: default;
+  cursor: pointer;
   touch-action: none;
   transition: border-radius 0.2s, opacity 0.2s, transform 0.2s;
 }
