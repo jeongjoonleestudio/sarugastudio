@@ -118,10 +118,10 @@ nav {
 .project-item:hover .project-title {
   color: #ff4fa0;
 }
-.project-thumb {
+..project-thumb {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   display: block;
 }
 /* 각 카드 내부 여백 */
