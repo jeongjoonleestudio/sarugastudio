@@ -282,11 +282,12 @@ nav {
   padding: 3.5rem 3rem 6rem 2rem;
   scrollbar-width: none;
   flex-shrink: 0;
-  width: 50%;
+  width: 35%;
   min-width: 240px;
   max-width: calc(100% - 240px);
 }
 .detail-left::-webkit-scrollbar { display: none; }
+.detail-inner { max-width: 35vw; }
 
 /* RESIZER */
 .detail-resizer {

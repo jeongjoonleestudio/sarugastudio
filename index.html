@@ -202,7 +202,7 @@ function openProject(id) {
 
   const R = p.gallery.map(src => `<img class="gallery-img" src="${src}" alt="" loading="lazy">`).join('');
 
-  document.getElementById('detailLeft').innerHTML  = L;
+  document.getElementById('detailLeft').innerHTML  = `<div class="detail-inner">${L}</div>`;
   document.getElementById('detailRight').innerHTML = R;
 
   sections.forEach(s => {
