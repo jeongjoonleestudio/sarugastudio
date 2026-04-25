@@ -43,7 +43,6 @@ export const PROJECTS = [
       'assets/images/projects/yeonhui-studio/detail-1.png',
     ]
   },
-
   {
     title: 'Hello World', year: '2020', type: 'Residential', location: 'Seodaemun-gu, Seoul',
     layout: { row: 2, colStart: 12, colEnd: 21 },
@@ -59,5 +58,4 @@ export const PROJECTS = [
       'assets/images/projects/hello-world/detail-1.png',
     ]
   }
-
 ];
