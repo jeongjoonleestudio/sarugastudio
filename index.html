@@ -104,9 +104,10 @@ const projectList = document.querySelector('.project-list');
 function renderProjectGrid() {
   projectList.innerHTML = PROJECTS.map((project, id) => {
     const { row = 1, colStart = 1, colEnd = 13 } = project.layout || {};
+    const thumb = project.thumbnail || project.gallery?.[0] || '';
     return `
-      <button class="project-item" type="button" data-id="${id}" data-img="${project.gallery?.[0] || ''}" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row};">
-        <img class="project-thumb" src="${project.gallery?.[0] || ''}" alt="${project.title}" loading="lazy">
+      <button class="project-item" type="button" data-id="${id}" data-img="${thumb}" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row};">
+        <img class="project-thumb" src="${thumb}" alt="${project.title}" loading="lazy">
         <div class="project-info">
           <span class="project-number">${String(id).padStart(2, '0')}</span>
           <span class="project-title">${project.title}</span>
