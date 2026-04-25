@@ -1,7 +1,7 @@
 export const PROJECTS = [
   {
     title: '연희초등학교 리노베이션', year: '2024', type: 'Education', location: '서대문구, 서울',
-    layout: { row: 1, colStart: 1, colEnd: 12 },
+    layout: { row: 1, colStart: 1, colEnd: 10 },
     thumbnail: 'assets/images/projects/saruga/thumbnail.png',
 
     essay: [
@@ -16,7 +16,7 @@ export const PROJECTS = [
   },
   {
     title: 'Bukhansan Shelter', year: '2021', type: 'Public', location: 'Bukhansan National Park, Seoul',
-    layout: { row: 1, colStart: 22, colEnd: 34 },
+    layout: { row: 1, colStart: 16, colEnd: 24 },
     thumbnail: 'assets/images/projects/bukhansan-shelter/thumbnail.png',
     essay: [
       { kind: 'text', content: 'A rest shelter at the midpoint of a popular hiking trail on the southern face of Bukhansan. The program is simple: shade, seating, drinking water, and an emergency telephone. The challenge is that the site is accessible only on foot, so all materials had to be carried in by hand.' },
@@ -46,7 +46,7 @@ export const PROJECTS = [
 
   {
     title: 'Hello World', year: '2020', type: 'Residential', location: 'Seodaemun-gu, Seoul',
-    layout: { row: 5, colStart: 12, colEnd: 24 },
+    layout: { row: 2, colStart: 12, colEnd: 21 },
     thumbnail: 'assets/images/projects/hello-world/thumbnail.png',
     essay: [
       { kind: 'text', content: 'A working studio and living space for a ceramicist in the Yeonhui neighborhood of northwestern Seoul. The brief asked for a kiln room, a glazing studio, storage for finished work, and a simple apartment — all within a tight budget and an equally tight site.' },

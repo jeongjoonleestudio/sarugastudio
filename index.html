@@ -30,6 +30,9 @@
 
 <!-- PROJECTS LIST -->
 <section class="section visible" id="projects">
+  <div class="project-controls">
+    <button type="button" class="view-toggle" id="viewToggle" aria-label="Toggle project view"></button>
+  </div>
   <div class="project-list">
 </div>
 </section>
@@ -100,6 +103,12 @@ window.goHome = goHome;
 window.goBack = goBack;
 
 const projectList = document.querySelector('.project-list');
+const viewToggle = document.getElementById('viewToggle');
+const projectControls = document.querySelector('.project-controls');
+let isDraggingToggle = false;
+let dragMoved = false;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
 
 function renderProjectGrid() {
   projectList.innerHTML = PROJECTS.map((project, id) => {
@@ -111,6 +120,7 @@ function renderProjectGrid() {
         <div class="project-info">
           <span class="project-number">${String(id).padStart(2, '0')}</span>
           <span class="project-title">${project.title}</span>
+          <span class="project-meta">${project.year} · ${project.type}</span>
         </div>
       </button>
     `;
@@ -118,6 +128,45 @@ function renderProjectGrid() {
 
   attachProjectItemEvents();
 }
+
+function setProjectView(isList) {
+  projectList.classList.toggle('list-view', isList);
+  viewToggle.classList.toggle('list-mode', isList);
+}
+
+viewToggle.addEventListener('pointerdown', e => {
+  isDraggingToggle = true;
+  dragMoved = false;
+  const rect = projectControls.getBoundingClientRect();
+  dragOffsetX = e.clientX - rect.left;
+  dragOffsetY = e.clientY - rect.top;
+  viewToggle.setPointerCapture(e.pointerId);
+  document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('pointermove', e => {
+  if (!isDraggingToggle) return;
+  dragMoved = true;
+  const w = projectControls.offsetWidth;
+  const h = projectControls.offsetHeight;
+  const x = Math.min(Math.max(e.clientX - dragOffsetX, 0), window.innerWidth - w);
+  const y = Math.min(Math.max(e.clientY - dragOffsetY, 0), window.innerHeight - h);
+  projectControls.style.left = x + 'px';
+  projectControls.style.top = y + 'px';
+  projectControls.style.right = 'auto';
+});
+
+document.addEventListener('pointerup', e => {
+  if (!isDraggingToggle) return;
+  isDraggingToggle = false;
+  document.body.style.userSelect = '';
+  try { viewToggle.releasePointerCapture(e.pointerId); } catch (err) {}
+  if (!dragMoved) {
+    setProjectView(!projectList.classList.contains('list-view'));
+  }
+});
+
+setProjectView(false);
 
 function attachProjectItemEvents() {
   document.querySelectorAll('.project-item').forEach(item => {
