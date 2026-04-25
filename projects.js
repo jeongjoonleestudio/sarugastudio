@@ -45,5 +45,24 @@ export const PROJECTS = [
       'https://images.unsplash.com/photo-1503174971373-b1f69850bded?w=900&q=80',
       'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=900&q=80',
     ]
+  },
+  
+    {
+    title: 'dddddddddd', year: '2020', type: 'Residential', location: 'Seodaemun-gu, Seoul',
+    layout: { row: 3, colStart: 20, colEnd: 30 },
+    essay: [
+      { kind: 'text', content: 'A working studio and living space for a ceramicist in the Yeonhui neighborhood of northwestern Seoul. The brief asked for a kiln room, a glazing studio, storage for finished work, and a simple apartment — all within a tight budget and an equally tight site.' },
+      { kind: 'img', src: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900&q=80', caption: 'Studio interior, north light.' },
+      { kind: 'pull', content: 'Light from the north has no agenda. It does not flatter or deceive. It is simply reliable.' },
+      { kind: 'text', content: 'The studio is oriented north for stable working light. The kiln room sits at the back, ventilated by a tall brick chimney that also acts as the building\'s main vertical landmark. Living spaces are on the upper floor, compact and efficient, with a rooftop terrace that looks across to the mountain.' },
+      { kind: 'text', content: 'The exterior is plain brick, local and inexpensive. Inside, the floors are poured concrete, sealed and polished. The decision to keep the palette this simple was practical, and it turned out to be correct: the client\'s work is the most colorful thing in the building.' },
+    ],
+    gallery: [
+      'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900&q=80',
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=900&q=80',
+      'https://images.unsplash.com/photo-1503174971373-b1f69850bded?w=900&q=80',
+      'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=900&q=80',
+    ]
   }
+  
 ];
