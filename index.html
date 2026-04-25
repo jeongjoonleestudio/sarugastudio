@@ -84,23 +84,83 @@
 import { PROJECTS } from './projects.js';
 
 // ZOOM
-const MIN_COLS = 3;
-const MAX_COLS = 8;
-let gridCols = MAX_COLS;
+// 원본 layout 저장 (불변)
+const BASE_LAYOUT = PROJECTS.map((p, i) => {
+  const { row = 1, colStart = 1, colEnd = 13 } = p.layout || {};
+  return { id: i, row, colStart, colEnd, span: colEnd - colStart };
+});
 
-const zoomInBtn  = document.getElementById('zoomIn');
-const zoomOutBtn = document.getElementById('zoomOut');
+let zoomScale = 1.0;
 
-function setGridCols(n) {
-  gridCols = Math.min(MAX_COLS, Math.max(MIN_COLS, n));
-  document.querySelector('.project-list').style.setProperty('--grid-cols', gridCols);
-  zoomInBtn.disabled  = gridCols === MIN_COLS;
-  zoomOutBtn.disabled = gridCols === MAX_COLS;
+const zoomInBtn     = document.getElementById('zoomIn');
+const zoomOutBtn    = document.getElementById('zoomOut');
+const projectListEl = document.querySelector('.project-list');
+
+// scale 적용 후 row 넘침을 결정론적으로 처리
+// 같은 scale → 항상 같은 결과 → - 버튼이 + 버튼을 정확히 역연산
+function computeLayout(scale) {
+  // 1. 스케일 적용 (span 유지 — 이미지 크기 보존)
+  const scaled = BASE_LAYOUT.map(c => {
+    const newSpan  = Math.max(3, Math.round(c.span * scale));
+    const newStart = Math.max(1, Math.round(c.colStart * scale));
+    return { id: c.id, baseRow: c.row, colStart: newStart, span: newSpan };
+  });
+
+  // 2. baseRow → colStart 순 정렬 (결정론적 순서)
+  scaled.sort((a, b) => a.baseRow !== b.baseRow ? a.baseRow - b.baseRow : a.colStart - b.colStart);
+
+  // 3. row별 커서로 overflow 처리 — 넘치면 다음 row 첫 칸부터 재배치
+  const rowCursors = {}; // row → 현재 row의 마지막 colEnd
+  const result = [];
+
+  for (const card of scaled) {
+    let row      = card.baseRow;
+    let tryStart = card.colStart;
+
+    while (true) {
+      const cursor = rowCursors[row] || 0;
+      const start  = Math.max(cursor + 1, tryStart);
+      const end    = start + card.span;
+
+      if (end <= 56) {
+        rowCursors[row] = end;
+        result.push({ id: card.id, row, colStart: start, colEnd: end });
+        break;
+      }
+      // 48 초과 → 다음 row 첫 칸부터 재시도
+      row++;
+      tryStart = 1;
+    }
+  }
+
+  return result;
 }
 
-zoomInBtn.addEventListener('click',  () => setGridCols(gridCols - 1));
-zoomOutBtn.addEventListener('click', () => setGridCols(gridCols + 1));
-setGridCols(MAX_COLS);
+function renderCards(layout) {
+  const elMap = {};
+  document.querySelectorAll('.project-item').forEach(el => {
+    elMap[parseInt(el.dataset.id)] = el;
+  });
+  layout.forEach(({ id, row, colStart, colEnd }) => {
+    const el = elMap[id];
+    if (!el) return;
+    el.style.gridColumn = `${colStart} / ${colEnd}`;
+    el.style.gridRow    = String(row);
+  });
+}
+
+function applyZoom() {
+  renderCards(computeLayout(zoomScale));
+}
+
+zoomInBtn.addEventListener('click', () => {
+  zoomScale = Math.min(2.0, +(zoomScale * 1.2).toFixed(4));
+  applyZoom();
+});
+zoomOutBtn.addEventListener('click', () => {
+  zoomScale = Math.max(0.5, +(zoomScale * 0.8).toFixed(4));
+  applyZoom();
+});
 
 const sections = ['projects','about','writings'];
 
@@ -129,9 +189,9 @@ const projectList = document.querySelector('.project-list');
 
 function renderProjectGrid() {
   projectList.innerHTML = PROJECTS.map((project, id) => {
-    const { cols = 2, offsetX = 0, offsetY = 0 } = project.layout || {};
+    const { row = 1, colStart = 1, colEnd = 13 } = project.layout || {};
     return `
-      <button class="project-item" type="button" data-id="${id}" data-img="${project.gallery?.[0] || ''}" style="grid-column: span ${cols}; --offset-x: ${offsetX}px; --offset-y: ${offsetY}px;">
+      <button class="project-item" type="button" data-id="${id}" data-img="${project.gallery?.[0] || ''}" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row};">
         <img class="project-thumb" src="${project.gallery?.[0] || ''}" alt="${project.title}" loading="lazy">
         <div class="project-info">
           <span class="project-number">${String(id).padStart(2, '0')}</span>

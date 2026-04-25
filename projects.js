@@ -1,7 +1,7 @@
 export const PROJECTS = [
   {
     title: '연희초등학교 리노베이션', year: '2024', type: 'Education', location: '서대문구, 서울',
-    layout: { cols: 3, offsetX: -10, offsetY: 15 },
+    layout: { row: 1, colStart: 1, colEnd: 12 },
 
     essay: [
       { kind: 'text', content: '연희초등학교는 1970년대에 지어진 전형적인 공립 초등학교 건물이다. 낮고 어두운 복도, 교실마다 닫힌 문, 운동장을 등진 배치 — 이 학교의 공간은 수십 년 동안 아이들에게 무언가를 가르쳐왔다. 열려 있어서는 안 된다는 것, 스스로 움직이지 말아야 한다는 것을. 우리가 받은 의뢰는 리노베이션이었지만, 실제 질문은 달랐다: 이 건물이 어떤 태도를 가르치길 원하는가.' },
@@ -16,7 +16,7 @@ export const PROJECTS = [
   },
   {
     title: 'Bukhansan Shelter', year: '2021', type: 'Public', location: 'Bukhansan National Park, Seoul',
-    layout: { cols: 2, offsetX: 20, offsetY: -10 },
+    layout: { row: 1, colStart: 22, colEnd: 34 },
     essay: [
       { kind: 'text', content: 'A rest shelter at the midpoint of a popular hiking trail on the southern face of Bukhansan. The program is simple: shade, seating, drinking water, and an emergency telephone. The challenge is that the site is accessible only on foot, so all materials had to be carried in by hand.' },
       { kind: 'img', src: 'https://images.unsplash.com/photo-1462826303086-329426d1aef5?w=900&q=80', caption: 'Shelter integrated into the rock face.' },
@@ -31,7 +31,7 @@ export const PROJECTS = [
   },
   {
     title: 'Yeonhui Studio', year: '2020', type: 'Residential', location: 'Seodaemun-gu, Seoul',
-    layout: { cols: 3, offsetX: 0, offsetY: 0 },
+    layout: { row: 1, colStart: 42, colEnd: 54 },
     essay: [
       { kind: 'text', content: 'A working studio and living space for a ceramicist in the Yeonhui neighborhood of northwestern Seoul. The brief asked for a kiln room, a glazing studio, storage for finished work, and a simple apartment — all within a tight budget and an equally tight site.' },
       { kind: 'img', src: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900&q=80', caption: 'Studio interior, north light.' },
