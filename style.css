@@ -1,4 +1,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  vertical-align: top;
+}
 :root {
   --black: #050505;
   --white: #ffffff;
@@ -87,9 +94,10 @@ nav {
 .project-list {
   padding: 2rem 0 6rem; /* 위 | 좌우 | 아래 */
   display: grid;
-  grid-template-columns: repeat(56, 1fr);
-  grid-auto-rows: 70vh;
+  grid-template-columns: repeat(48, 1fr);
+  grid-auto-rows: auto;
   column-gap: 0;
+  row-gap: 6rem;   /* row 간격 */
   align-items: start;
   min-height: calc(100vh - var(--nav-h) - 4rem);
   width: 90vw;
@@ -112,8 +120,8 @@ nav {
 }
 .project-thumb {
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
   display: block;
 }
 /* 각 카드 내부 여백 */
@@ -130,16 +138,20 @@ nav {
 }
 .project-number {
   font-family: var(--mono);
-  font-size: calc(0.8rem * var(--zoom-scale, 1));
+  font-size: 0.8rem;
   font-weight: 400;
   letter-spacing: 0.2em;
   opacity: 0.7;
 }
 .project-title {
   font-family: var(--mono);
-  font-size: calc(1rem * var(--zoom-scale, 1));
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 @media (max-width: 700px) {
   .project-list {
@@ -158,32 +170,6 @@ nav {
 }
 
 /* ZOOM CONTROLS */
-.zoom-controls {
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 100;
-}
-.zoom-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: 1px solid rgba(0,0,0,0.2);
-  cursor: pointer;
-  color: rgba(0,0,0,0.4);
-  transition: color 0.2s, border-color 0.2s;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-.zoom-btn:hover { color: var(--black); border-color: var(--black); }
-.zoom-btn:disabled { opacity: 0.2; cursor: default; }
 
 /* HOVER IMG */
 .hover-img {
