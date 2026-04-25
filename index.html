@@ -5,24 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>studio saruga</title>
 <link rel="icon" type="image/png" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --black: #050505;
   --white: #ffffff;
   --gray: #666;
-  --serif: 'Cormorant', Georgia, serif;
-  --mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --sans: Arial, Helvetica, sans-serif;
+  --serif: var(--sans);
+  --mono: var(--sans);
   --nav-h: 56px;
 }
 html { font-size: 16px; }
 body {
   background: var(--white);
   color: var(--black);
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-weight: 300;
   min-height: 100vh;
   overflow-x: hidden;
@@ -39,32 +37,32 @@ nav {
   justify-content: space-between;
   padding: 0 2rem;
   z-index: 200;
-  background: var(--black);
+  background: transparent;
   border-bottom: none;
 }
 .nav-logo {
-  font-family: var(--mono);
-  font-size: 0.82rem;
+  font-family: var(--sans);
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--white);
+  color: var(--black);
   text-decoration: none;
   cursor: pointer;
 }
 .nav-links { display: flex; gap: 2.5rem; list-style: none; }
 .nav-links a {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 0.68rem;
   font-weight: 300;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
+  color: rgba(0,0,0,0.45);
   text-decoration: none;
   transition: color 0.2s;
   cursor: pointer;
 }
-.nav-links a:hover, .nav-links a.active { color: var(--white); }
+.nav-links a:hover, .nav-links a.active { color: var(--black); }
 
 .nav-back {
   display: none;
@@ -73,14 +71,14 @@ nav {
   font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
+  color: rgba(0,0,0,0.45);
   cursor: pointer;
   transition: color 0.2s;
   background: none;
   border: none;
-  font-family: var(--mono);
+  font-family: var(--sans);
 }
-.nav-back:hover { color: var(--white); }
+.nav-back:hover { color: var(--black); }
 .nav-back.visible { display: flex; }
 
 /* SECTIONS */
@@ -325,21 +323,109 @@ nav {
 .contact-link:hover { opacity: 0.4; }
 
 /* WRITINGS */
-#writings { padding: calc(var(--nav-h) + 5vh) 2rem 8vh; }
-.writings-list { max-width: 680px; }
+#writings {
+  height: 100vh;
+  overflow: hidden;
+  min-height: unset;
+  padding: 0 !important;
+}
+#writings.visible {
+  display: flex !important;
+  flex-direction: row;
+}
+.writings-left {
+  height: calc(100vh - var(--nav-h));
+  margin-top: var(--nav-h);
+  overflow-y: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  width: 40%;
+  min-width: 240px;
+  max-width: calc(100% - 240px);
+  padding: 2.5rem 2rem 6rem;
+}
+.writings-left::-webkit-scrollbar { display: none; }
+.writings-resizer {
+  width: 13px;
+  height: calc(100vh - var(--nav-h));
+  margin-top: var(--nav-h);
+  flex-shrink: 0;
+  cursor: col-resize;
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.writings-resizer::before {
+  content: '';
+  width: 1px;
+  background: var(--black);
+  transition: background 0.15s, width 0.15s;
+  flex-shrink: 0;
+}
+.writings-resizer:hover::before,
+.writings-resizer.dragging::before { width: 3px; }
+.writings-right {
+  height: calc(100vh - var(--nav-h));
+  margin-top: var(--nav-h);
+  overflow-y: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 240px;
+  padding: 2.5rem 3rem 8rem 2.5rem;
+}
+.writings-right::-webkit-scrollbar { display: none; }
+.writings-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.writings-list { }
 .writing-item {
   border-top: 1px solid var(--black);
-  padding: 1.6rem 0;
+  padding: 1.4rem 0;
   display: grid; grid-template-columns: 1fr auto;
-  align-items: start; gap: 2rem;
+  align-items: start; gap: 1.5rem;
   transition: opacity 0.2s; cursor: pointer;
 }
 .writing-item:last-child { border-bottom: 1px solid var(--black); }
 .writings-list:hover .writing-item { opacity: 0.2; }
 .writings-list:hover .writing-item:hover { opacity: 1; }
-.writing-title { font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 300; line-height: 1.25; margin-bottom: 0.4rem; }
-.writing-desc { font-size: 0.7rem; color: var(--gray); letter-spacing: 0.04em; line-height: 1.7; max-width: 420px; }
+.writing-item.active { opacity: 1 !important; }
+.writing-item.active .writing-title { color: #ff4fa0; }
+.writing-title { font-family: var(--sans); font-size: clamp(0.95rem, 1.5vw, 1.2rem); font-weight: 400; line-height: 1.25; margin-bottom: 0.3rem; }
+.writing-desc { font-size: 0.65rem; color: var(--gray); letter-spacing: 0.04em; line-height: 1.7; }
 .writing-date { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); white-space: nowrap; padding-top: 0.25rem; }
+.writing-detail-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--black);
+}
+.writing-detail-title {
+  font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+.writing-detail-meta {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--gray);
+  text-transform: uppercase;
+}
+.writing-detail-body p {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  max-width: 620px;
+}
+.writing-detail-body p + p { margin-top: 1.2rem; }
 
 /* FOOTER */
 footer { border-top: 1px solid var(--black); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; }
@@ -350,6 +436,10 @@ footer span { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); tex
   .detail-right { display: none; }
   .detail-resizer { display: none; }
   .detail-left { border-right: none; padding-right: 1.2rem; width: 100% !important; max-width: 100%; }
+  #writings.visible { flex-direction: column; }
+  .writings-right { display: none; }
+  .writings-resizer { display: none; }
+  .writings-left { width: 100% !important; max-width: 100%; }
   .hover-img { display: none; }
   .about-grid { grid-template-columns: 1fr; }
   nav { padding: 0 1.2rem; }
@@ -360,7 +450,7 @@ footer span { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); tex
 <body>
 
 <nav>
-  <a class="nav-logo" onclick="goHome()">SARUGA STUDIO</a>
+  <a class="nav-logo" onclick="goHome()">SARUGA</a>
   <div style="display:flex;align-items:center;">
     <button class="nav-back" id="navBack" onclick="goBack()">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -410,23 +500,12 @@ footer span { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); tex
 
 <!-- WRITINGS -->
 <section class="section" id="writings">
-  <div class="writings-list">
-    <div class="writing-item">
-      <div><p class="writing-title">On the Thickness of Walls</p><p class="writing-desc">A meditation on material weight, insulation, and what we mean when we speak of shelter.</p></div>
-      <span class="writing-date">2024. 11</span>
-    </div>
-    <div class="writing-item">
-      <div><p class="writing-title">Seoul's Remaining Courtyard Houses</p><p class="writing-desc">Notes from a survey of hanok adaptations in Seochon and Bukchon — what survives and why.</p></div>
-      <span class="writing-date">2024. 06</span>
-    </div>
-    <div class="writing-item">
-      <div><p class="writing-title">Material as Argument</p><p class="writing-desc">The choice of concrete, wood, or stone is never neutral. On the rhetoric embedded in surface.</p></div>
-      <span class="writing-date">2023. 09</span>
-    </div>
-    <div class="writing-item">
-      <div><p class="writing-title">Small Buildings, Large Questions</p><p class="writing-desc">Why the residential scale remains the most demanding — and most honest — test of architecture.</p></div>
-      <span class="writing-date">2022. 03</span>
-    </div>
+  <div class="writings-left" id="writingsLeft">
+    <div class="writings-list" id="writingsList"></div>
+  </div>
+  <div class="writings-resizer" id="writingsResizer"></div>
+  <div class="writings-right" id="writingsRight">
+    <div class="writings-placeholder">Select an article to read</div>
   </div>
 </section>
 
@@ -595,6 +674,125 @@ document.addEventListener('mousemove', e => {
   if (y + 195 > window.innerHeight) y = my - 195;
   hoverImg.style.left = x + 'px';
   hoverImg.style.top  = y + 'px';
+});
+
+// WRITINGS DATA
+const WRITINGS = [
+  {
+    title: 'On the Thickness of Walls',
+    date: '2024. 11',
+    desc: 'A meditation on material weight, insulation, and what we mean when we speak of shelter.',
+    content: [
+      'Walls are not abstract. Every wall has a thickness, and that thickness is a decision — about budget, about climate, about how much the building cares to protect you from what is outside. A thin wall says something. A thick wall says something else.',
+      'In the old stone buildings of Jeju, walls were built from volcanic rock stacked without mortar — porous, breathing, letting the salt wind pass through rather than resisting it. The wall was not a barrier but a filter. It negotiated between inside and outside rather than dividing them.',
+      'Modern construction logic tends toward thin. Insulation improves, so walls can be thinner and still meet thermal standards. But there is a quality lost in this efficiency — not just the tactile sense of depth in a window reveal, not just the thickness of shadow cast, but something less measurable: the sense that the building is taking the climate seriously. That it has thought about where it is.',
+      'When we designed the garden wall for the Yeonhui Studio, we chose a thickness of 400mm — far beyond what was structurally necessary. We wanted a wall you could sit on, a wall whose shadow was wide enough to rest under, a wall that had mass enough to store the heat of an afternoon and release it into the evening.',
+      'The wall is also a kind of argument. It says: this boundary matters. We took time to think about it. The outside world is real, and so is the inside, and the membrane between them deserves care.'
+    ]
+  },
+  {
+    title: "Seoul's Remaining Courtyard Houses",
+    date: '2024. 06',
+    desc: 'Notes from a survey of hanok adaptations in Seochon and Bukchon — what survives and why.',
+    content: [
+      'In the summer of 2023, we walked every alley in Seochon and Bukchon with a camera and a notebook. We were looking for surviving hanok — not the restored showpieces, but the ones that had been quietly adapted, extended, and occupied without fanfare. What we found was more interesting than what we expected.',
+      'Seochon has retained more of its urban fabric than Bukchon, partly because it was left alone longer, partly because it attracted a different kind of resident — artists, craftspeople, small restaurant owners — who valued eccentricity over uniformity. The hanok there are messier. Corrugated metal roofs over wooden beams, vinyl windows replacing paper screens, gas cylinders chained to iron gates. They are alive in the way that only used things can be.',
+      "Bukchon's restored hanok are more photogenic and more dead. The restoration process tends to strip away the evidence of inhabitation, returning buildings to a hypothetical original state that no one ever actually lived in. The surfaces are too clean. The gardens are too arranged.",
+      'What survives in the unrestored buildings is a set of spatial relationships that are genuinely different from the modern apartment: the relationship between the room and the courtyard, the way rooms connect through the exterior rather than through corridors, the graduation from public gate to private inner room. These relationships produce a different kind of social life — less linear, more porous.',
+      'The question is whether these spatial qualities can be preserved as the buildings inevitably change. Our conclusion, from the survey, is that they can — but only if the courtyard is protected. The courtyard is the logic of the building. Lose it, and the other rooms lose their meaning.'
+    ]
+  },
+  {
+    title: 'Material as Argument',
+    date: '2023. 09',
+    desc: 'The choice of concrete, wood, or stone is never neutral. On the rhetoric embedded in surface.',
+    content: [
+      'When we choose a material, we are not only solving a technical problem. We are making a claim about what the building thinks it is, where it thinks it belongs, and what it thinks of the people inside it.',
+      'Concrete in South Korea carries complicated associations. It is the material of rapid development — the apartment towers, the highway overpasses, the urban infrastructure built in two decades to house a population that had moved from countryside to city faster than any nation in history. To use concrete now is to invoke that history, whether you intend to or not.',
+      'At the Bukhansan Shelter, we used Corten steel for the roof. The choice was partly practical: Corten weathers to a stable oxide layer without requiring paint or maintenance, and it could be fabricated off-site and carried to the trail. But it was also rhetorical. The rust color is the color of autumn leaves and iron-rich soil. The material ages visibly, honestly, in sync with the landscape around it.',
+      'Wood is the most legible material in Korean architecture — legible in the sense that people understand it immediately, without instruction. They know it is warm, they know it ages, they know it might crack. This understanding creates a kind of social contract between building and inhabitant. The building will change with time, and the inhabitant accepts this.',
+      'The hardest material to use well, in our experience, is glass. Glass presents itself as neutral — transparent, recessive, disappearing. But full-glass facades are among the most assertive things you can build. They announce: I have nothing to hide. I am open. I am modern. This is usually untrue of the institution behind them.'
+    ]
+  },
+  {
+    title: 'Small Buildings, Large Questions',
+    date: '2022. 03',
+    desc: 'Why the residential scale remains the most demanding — and most honest — test of architecture.',
+    content: [
+      'The house is the hardest building to design. This is not an obvious claim. Museums, concert halls, airports — these seem far more demanding in their technical complexity, their programmatic ambition, their civic significance. But the house confronts you with questions that larger buildings allow you to avoid.',
+      'In a house, there is nowhere to hide. Every decision is visible and felt. The height of a window sill, the position of a socket, the depth of a closet — these are experienced daily, at close range, by the people who live there. There is no lobby to impress visitors before they reach the awkward parts. There is no institutional distance between the building and its users.',
+      "The houses we admire most — Aalto's Villa Mairea, Ando's Azuma House, the farmhouses of the Italian vernacular — are admirable not because they solved large problems but because they solved small ones with complete attention. They noticed things. They cared about the particular.",
+      'Working at residential scale has taught us several things that we try to carry into larger projects. First: the quality of daily life depends more on detail than on concept. Second: the best spatial decisions are often invisible — you notice only that you feel comfortable, not why. Third: the client is always right about what they feel, even when they are wrong about what they want.',
+      "There is a tendency in contemporary architecture to treat the house as a vehicle for ideas — about structure, about surface, about the relationship between private and public. The ideas are sometimes brilliant. But a house that serves ideas at the expense of the people inside it has failed at its most basic task. The people are not the audience for the architecture. They are the architecture's reason."
+    ]
+  }
+];
+
+function renderWritings() {
+  const list = document.getElementById('writingsList');
+  list.innerHTML = WRITINGS.map((w, i) => `
+    <div class="writing-item" data-id="${i}">
+      <div>
+        <p class="writing-title">${w.title}</p>
+        <p class="writing-desc">${w.desc}</p>
+      </div>
+      <span class="writing-date">${w.date}</span>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.writing-item').forEach(item => {
+    item.addEventListener('click', () => {
+      list.querySelectorAll('.writing-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+      openWriting(parseInt(item.dataset.id, 10));
+    });
+  });
+}
+
+function openWriting(id) {
+  const w = WRITINGS[id];
+  if (!w) return;
+  const right = document.getElementById('writingsRight');
+  right.innerHTML = `
+    <div class="writing-detail-header">
+      <p class="writing-detail-title">${w.title}</p>
+      <p class="writing-detail-meta">${w.date}</p>
+    </div>
+    <div class="writing-detail-body">
+      ${w.content.map(p => `<p>${p}</p>`).join('')}
+    </div>
+  `;
+  right.scrollTop = 0;
+}
+
+renderWritings();
+
+// Writings resizer
+const writingsResizer = document.getElementById('writingsResizer');
+const writingsLeft    = document.getElementById('writingsLeft');
+const writingsSection = document.getElementById('writings');
+let isWritingsResizing = false;
+
+writingsResizer.addEventListener('mousedown', () => {
+  isWritingsResizing = true;
+  writingsResizer.classList.add('dragging');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', e => {
+  if (!isWritingsResizing) return;
+  const rect = writingsSection.getBoundingClientRect();
+  const pct  = Math.min(Math.max((e.clientX - rect.left) / (rect.width - 13) * 100, 20), 80);
+  writingsLeft.style.width = pct + '%';
+});
+
+document.addEventListener('mouseup', () => {
+  if (!isWritingsResizing) return;
+  isWritingsResizing = false;
+  writingsResizer.classList.remove('dragging');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
 });
 
 </script>
