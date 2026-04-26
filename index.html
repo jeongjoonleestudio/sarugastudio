@@ -226,7 +226,28 @@ function renderProjectGrid() {
   }
 
   attachProjectItemEvents();
+  fitProjectThumbs();
 }
+
+function fitProjectThumbs() {
+  document.querySelectorAll('.project-thumb').forEach(img => {
+    const applySize = () => {
+      if (!img.naturalWidth || !img.naturalHeight) return;
+      const styles = getComputedStyle(img);
+      const thumbHeight = img.getBoundingClientRect().height;
+      const maxWidth = parseFloat(styles.maxWidth) || window.innerWidth;
+      const width = Math.min((img.naturalWidth / img.naturalHeight) * thumbHeight, maxWidth);
+
+      img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+      img.style.width = `${width}px`;
+    };
+
+    if (img.complete) applySize();
+    else img.addEventListener('load', applySize, { once: true });
+  });
+}
+
+window.addEventListener('resize', fitProjectThumbs);
 
 function setProjectView(isList) {
   projectList.classList.toggle('list-view', isList);
