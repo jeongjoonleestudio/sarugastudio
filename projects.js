@@ -9,6 +9,10 @@ const THUMBNAILS_URL = SHEET + '?gid=67858807&single=true&output=csv';
 const ESSAY_URL      = SHEET + '?gid=908161552&single=true&output=csv';
 const GALLERY_URL    = SHEET + '?gid=1090780484&single=true&output=csv';
 
+function uncached(url) {
+  return url + '&v=' + Date.now();
+}
+
 function parseCSV(text) {
   const rows = [];
   let row = [], field = '', inQuotes = false;
@@ -39,7 +43,10 @@ function toObjects(rows) {
 
 export async function loadData() {
   const [pRes, tRes, eRes, gRes] = await Promise.all([
-    fetch(PROJECTS_URL), fetch(THUMBNAILS_URL), fetch(ESSAY_URL), fetch(GALLERY_URL),
+    fetch(uncached(PROJECTS_URL)),
+    fetch(uncached(THUMBNAILS_URL)),
+    fetch(uncached(ESSAY_URL)),
+    fetch(uncached(GALLERY_URL)),
   ]);
   const [pCSV, tCSV, eCSV, gCSV] = await Promise.all([
     pRes.text(), tRes.text(), eRes.text(), gRes.text(),

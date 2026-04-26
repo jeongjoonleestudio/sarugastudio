@@ -89,6 +89,10 @@ const base = (() => {
   return p.endsWith('/') ? p : p.substring(0, p.lastIndexOf('/') + 1);
 })();
 
+function assetUrl(src) {
+  return src.startsWith('http') ? src : encodeURI(base + src);
+}
+
 function show(id, push = true) {
   if (push) history.pushState(null, '', base + (id === 'projects' ? '' : id));
   document.getElementById('detail').classList.remove('visible');
@@ -159,7 +163,7 @@ function renderProjectGrid() {
     projectList.innerHTML = THUMBNAILS.map(t => {
       const p = PROJECTS[t.projectId];
       if (!p) return '';
-      const imgSrc = t.image.startsWith('http') ? t.image : base + t.image;
+      const imgSrc = assetUrl(t.image);
       const num = String(projectOrder[t.projectId]).padStart(2, '0');
       return `
         <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; grid-row: ${t.row};">
@@ -248,7 +252,7 @@ function attachProjectItemEvents() {
 function openProject(projectId, push = true) {
   const p = PROJECTS[projectId];
   if (!p) return;
-  if (push) history.pushState(null, '', base + 'project/' + projectId);
+  if (push) history.pushState(null, '', base + 'project/' + encodeURIComponent(projectId));
 
   let L = `<div class="detail-header">
     <p class="detail-label">${p.type} — ${p.location}</p>
@@ -260,7 +264,7 @@ function openProject(projectId, push = true) {
     if (b.kind === 'text') {
       L += `<div class="essay-block"><p>${b.content}</p></div>`;
     } else if (b.kind === 'img') {
-      L += `<img class="essay-img" src="${b.src.startsWith('http') ? b.src : base + b.src}" alt="">`;
+      L += `<img class="essay-img" src="${assetUrl(b.src)}" alt="">`;
       if (b.caption) L += `<p class="essay-img-caption">${b.caption}</p>`;
     } else if (b.kind === 'pull') {
       L += `<blockquote class="essay-pull">${b.content}</blockquote>`;
@@ -268,7 +272,7 @@ function openProject(projectId, push = true) {
   });
 
   const R = p.gallery.map(g => {
-    const src = g.src.startsWith('http') ? g.src : base + g.src;
+    const src = assetUrl(g.src);
     return `<figure class="gallery-figure">
       <img class="gallery-img" src="${src}" alt="${g.caption || ''}" loading="lazy">
       ${g.caption ? `<figcaption class="gallery-caption">${g.caption}</figcaption>` : ''}
