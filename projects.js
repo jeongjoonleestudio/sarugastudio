@@ -1,11 +1,9 @@
 const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7Sx0nBAzKC3ZC-pgnkl-miK8UrMs_dre4tCORNurWKgtXcKcB7bttI0Kc18JFKri66EoCVi_vydKw/pub';
 
 // projects tab:   id | title | year | type | location
-// thumbnails tab: project_id | grid_row | grid_col_start | grid_col_end | image
 // essay tab:      project_id | order | kind | content | image_src | image_caption  (kind: text | img | pull)
 // gallery tab:    project_id | order | image_src | image_caption
 const PROJECTS_URL   = SHEET + '?gid=1246029181&single=true&output=csv';
-const THUMBNAILS_URL = SHEET + '?gid=67858807&single=true&output=csv';
 const ESSAY_URL      = SHEET + '?gid=908161552&single=true&output=csv';
 const GALLERY_URL    = SHEET + '?gid=1090780484&single=true&output=csv';
 
@@ -42,20 +40,22 @@ function toObjects(rows) {
 }
 
 export async function loadData() {
-  const [pRes, tRes, eRes, gRes] = await Promise.all([
+  const [pRes, eRes, gRes] = await Promise.all([
     fetch(uncached(PROJECTS_URL)),
-    fetch(uncached(THUMBNAILS_URL)),
     fetch(uncached(ESSAY_URL)),
     fetch(uncached(GALLERY_URL)),
   ]);
-  const [pCSV, tCSV, eCSV, gCSV] = await Promise.all([
-    pRes.text(), tRes.text(), eRes.text(), gRes.text(),
+  const [pCSV, eCSV, gCSV] = await Promise.all([
+    pRes.text(), eRes.text(), gRes.text(),
   ]);
 
   const projectRows = toObjects(parseCSV(pCSV));
-  const thumbRows   = toObjects(parseCSV(tCSV));
   const essayRows   = toObjects(parseCSV(eCSV));
   const galleryRows = toObjects(parseCSV(gCSV));
+  const projectIndex = {};
+  projectRows.forEach((p, i) => {
+    if (!(p.id in projectIndex)) projectIndex[p.id] = i;
+  });
 
   const projects = {};
   projectRows.forEach(p => {
@@ -78,13 +78,18 @@ export async function loadData() {
     };
   });
 
-  const thumbnails = thumbRows.map(t => ({
-    projectId: t.project_id,
-    row:      parseInt(t.grid_row)       || 1,
-    colStart: parseInt(t.grid_col_start) || 1,
-    colEnd:   parseInt(t.grid_col_end)   || 13,
-    image:    t.image,
-  }));
+  const thumbnails = galleryRows
+    .filter(g => g.project_id && g.image_src)
+    .sort((a, b) => {
+      const projectA = projectIndex[a.project_id] ?? Number.MAX_SAFE_INTEGER;
+      const projectB = projectIndex[b.project_id] ?? Number.MAX_SAFE_INTEGER;
+      return projectA - projectB || (parseInt(a.order) || 0) - (parseInt(b.order) || 0);
+    })
+    .map(g => ({
+      projectId: g.project_id,
+      image: g.image_src,
+      caption: g.image_caption,
+    }));
 
   return { projects, thumbnails };
 }

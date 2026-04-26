@@ -95,9 +95,10 @@ nav {
   padding: 2rem 0 6rem; /* 위 | 좌우 | 아래 */
   display: grid;
   grid-template-columns: repeat(56, 1fr);
-  grid-auto-rows: minmax(33vw, auto);
+  grid-auto-rows: auto;
+  grid-auto-flow: row dense;
   column-gap: 0;
-  row-gap: 0;
+  row-gap: clamp(2.5rem, 7vw, 9rem);
   align-items: start;
   min-height: calc(100vh - var(--nav-h) - 4rem);
   width: 90vw;
@@ -113,6 +114,7 @@ nav {
   background: transparent;
   cursor: crosshair;
   transition: color 0.3s ease;
+  align-self: start;
 }
 .project-item:hover {
 
@@ -171,6 +173,7 @@ nav {
   .project-item {
     grid-column: 1 / -1 !important;
     grid-row: auto !important;
+    margin-top: 0 !important;
   }
   .project-info {
     position: relative;
@@ -252,6 +255,7 @@ nav {
   padding: 1.4rem 1rem;
   border: 1px solid rgba(0,0,0,0.08);
   background: #fff;
+  margin-top: 0 !important;
 }
 .project-list.list-view .project-item:hover {
   background: #fafafa;

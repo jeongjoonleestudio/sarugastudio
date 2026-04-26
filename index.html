@@ -104,6 +104,36 @@ function assetUrl(src) {
   return src.startsWith('http') ? src : encodeURI(base + src);
 }
 
+function projectNumber(projectId) {
+  const ids = Object.keys(PROJECTS);
+  return String(ids.indexOf(projectId) + 1).padStart(2, '0');
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffle(items) {
+  return items
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+}
+
+function randomizeThumbnails(thumbnails) {
+  const columns = 56;
+  return shuffle(thumbnails).map(t => {
+    const span = randomInt(8, 22);
+    const colStart = randomInt(1, columns - span + 1);
+    return {
+      ...t,
+      colStart,
+      colEnd: colStart + span,
+      marginTop: randomInt(0, 18),
+    };
+  });
+}
+
 function show(id, push = true) {
   if (push) history.pushState(null, '', base + (id === 'projects' ? '' : id));
   document.getElementById('detail').classList.remove('visible');
@@ -149,36 +179,32 @@ function renderProjectGrid() {
 
   if (isList) {
     const seen = new Set();
-    const ordered = [];
-    THUMBNAILS.forEach(t => {
-      if (!seen.has(t.projectId) && PROJECTS[t.projectId]) {
-        seen.add(t.projectId);
-        ordered.push(PROJECTS[t.projectId]);
+    const ordered = Object.values(PROJECTS).filter(p => {
+      const hasThumbnail = THUMBNAILS.some(t => t.projectId === p.id);
+      if (hasThumbnail && !seen.has(p.id)) {
+        seen.add(p.id);
+        return true;
       }
+      return false;
     });
-    projectList.innerHTML = ordered.map((p, i) => `
+    projectList.innerHTML = ordered.map(p => `
       <button class="project-item" type="button" data-project-id="${p.id}">
         <div class="project-info">
-          <span class="project-number">${String(i + 1).padStart(2, '0')}</span>
+          <span class="project-number">${projectNumber(p.id)}</span>
           <span class="project-title">${p.title}</span>
           <span class="project-meta">${p.year} · ${p.type}</span>
         </div>
       </button>
     `).join('');
   } else {
-    const projectOrder = {};
-    let orderIdx = 1;
-    THUMBNAILS.forEach(t => {
-      if (!projectOrder[t.projectId]) projectOrder[t.projectId] = orderIdx++;
-    });
     projectList.innerHTML = THUMBNAILS.map(t => {
       const p = PROJECTS[t.projectId];
       if (!p) return '';
       const imgSrc = assetUrl(t.image);
-      const num = String(projectOrder[t.projectId]).padStart(2, '0');
+      const num = projectNumber(t.projectId);
       return `
-        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; grid-row: ${t.row};">
-          <img class="project-thumb" src="${imgSrc}" alt="${p.title}" loading="lazy">
+        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; margin-top: ${t.marginTop}vh;">
+          <img class="project-thumb" src="${imgSrc}" alt="${t.caption || p.title}" loading="lazy">
           <div class="project-info">
             <span class="project-number">${num}</span>
           </div>
@@ -244,7 +270,7 @@ function attachProjectItemEvents() {
   try {
     const data = await loadData();
     PROJECTS   = data.projects;
-    THUMBNAILS = data.thumbnails;
+    THUMBNAILS = randomizeThumbnails(data.thumbnails);
   } catch(e) {
     projectList.innerHTML = '<p style="padding:2rem;color:red">Failed to load projects. Check sheet URL.</p>';
     console.error(e);
