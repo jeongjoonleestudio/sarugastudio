@@ -78,8 +78,9 @@
 </footer>
 
 <script type="module">
-import { loadProjects } from './projects.js';
-let PROJECTS = [];
+import { loadData } from './projects.js';
+let PROJECTS = {};
+let THUMBNAILS = [];
 
 const sections = ['projects','about','writings'];
 
@@ -129,20 +130,47 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 
 function renderProjectGrid() {
-  projectList.innerHTML = PROJECTS.map((project, id) => {
-    const { row = 1, colStart = 1, colEnd = 13 } = project.layout || {};
-    const thumb = project.thumbnail || project.gallery?.[0] || '';
-    return `
-      <button class="project-item" type="button" data-id="${id}" data-img="${base + thumb}" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row};">
-        <img class="project-thumb" src="${base + thumb}" alt="${project.title}" loading="lazy">
+  const isList = projectList.classList.contains('list-view');
+
+  if (isList) {
+    const seen = new Set();
+    const ordered = [];
+    THUMBNAILS.forEach(t => {
+      if (!seen.has(t.projectId) && PROJECTS[t.projectId]) {
+        seen.add(t.projectId);
+        ordered.push(PROJECTS[t.projectId]);
+      }
+    });
+    projectList.innerHTML = ordered.map((p, i) => `
+      <button class="project-item" type="button" data-project-id="${p.id}">
         <div class="project-info">
-          <span class="project-number">${String(id).padStart(2, '0')}</span>
-          <span class="project-title">${project.title}</span>
-          <span class="project-meta">${project.year} · ${project.type}</span>
+          <span class="project-number">${String(i + 1).padStart(2, '0')}</span>
+          <span class="project-title">${p.title}</span>
+          <span class="project-meta">${p.year} · ${p.type}</span>
         </div>
       </button>
-    `;
-  }).join('');
+    `).join('');
+  } else {
+    const projectOrder = {};
+    let orderIdx = 1;
+    THUMBNAILS.forEach(t => {
+      if (!projectOrder[t.projectId]) projectOrder[t.projectId] = orderIdx++;
+    });
+    projectList.innerHTML = THUMBNAILS.map(t => {
+      const p = PROJECTS[t.projectId];
+      if (!p) return '';
+      const imgSrc = t.image.startsWith('http') ? t.image : base + t.image;
+      const num = String(projectOrder[t.projectId]).padStart(2, '0');
+      return `
+        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; grid-row: ${t.row};">
+          <img class="project-thumb" src="${imgSrc}" alt="${p.title}" loading="lazy">
+          <div class="project-info">
+            <span class="project-number">${num}</span>
+          </div>
+        </button>
+      `;
+    }).join('');
+  }
 
   attachProjectItemEvents();
 }
@@ -150,6 +178,7 @@ function renderProjectGrid() {
 function setProjectView(isList) {
   projectList.classList.toggle('list-view', isList);
   viewToggle.classList.toggle('list-mode', isList);
+  if (Object.keys(PROJECTS).length > 0) renderProjectGrid();
 }
 
 viewToggle.addEventListener('pointerdown', e => {
@@ -190,7 +219,7 @@ function attachProjectItemEvents() {
   document.querySelectorAll('.project-item').forEach(item => {
     item.addEventListener('click', () => {
       hoverImg.classList.remove('visible');
-      openProject(parseInt(item.dataset.id, 10));
+      openProject(item.dataset.projectId);
     });
   });
 }
@@ -198,7 +227,9 @@ function attachProjectItemEvents() {
 (async () => {
   projectList.innerHTML = '<p style="padding:2rem;opacity:0.4">Loading...</p>';
   try {
-    PROJECTS = await loadProjects();
+    const data = await loadData();
+    PROJECTS   = data.projects;
+    THUMBNAILS = data.thumbnails;
   } catch(e) {
     projectList.innerHTML = '<p style="padding:2rem;color:red">Failed to load projects. Check sheet URL.</p>';
     console.error(e);
@@ -209,15 +240,15 @@ function attachProjectItemEvents() {
   // Initial routing from URL after projects load
   const path = decodeURIComponent(location.pathname.slice(base.length));
   if (path.startsWith('project/')) {
-    const id = parseInt(path.slice(8), 10);
-    if (!isNaN(id)) openProject(id, false);
+    const projectId = path.slice(8);
+    if (projectId) openProject(projectId, false);
   }
 })();
 
-function openProject(id, push = true) {
-  const p = PROJECTS[id];
+function openProject(projectId, push = true) {
+  const p = PROJECTS[projectId];
   if (!p) return;
-  if (push) history.pushState(null, '', base + 'project/' + id);
+  if (push) history.pushState(null, '', base + 'project/' + projectId);
 
   let L = `<div class="detail-header">
     <p class="detail-label">${p.type} — ${p.location}</p>
@@ -236,7 +267,13 @@ function openProject(id, push = true) {
     }
   });
 
-  const R = p.gallery.map(src => `<img class="gallery-img" src="${base}${src}" alt="" loading="lazy">`).join('');
+  const R = p.gallery.map(g => {
+    const src = g.src.startsWith('http') ? g.src : base + g.src;
+    return `<figure class="gallery-figure">
+      <img class="gallery-img" src="${src}" alt="${g.caption || ''}" loading="lazy">
+      ${g.caption ? `<figcaption class="gallery-caption">${g.caption}</figcaption>` : ''}
+    </figure>`;
+  }).join('');
 
   document.getElementById('detailLeft').innerHTML  = `<div class="detail-inner">${L}</div>`;
   document.getElementById('detailRight').innerHTML = R;
@@ -425,8 +462,8 @@ window.addEventListener('popstate', () => {
   } else if (path === 'about' || path === 'writings') {
     show(path, false);
   } else if (path.startsWith('project/')) {
-    const id = parseInt(path.slice(8), 10);
-    if (!isNaN(id)) openProject(id, false);
+    const projectId = path.slice(8);
+    if (projectId) openProject(projectId, false);
   }
 });
 
