@@ -78,7 +78,8 @@
 </footer>
 
 <script type="module">
-import { PROJECTS } from './projects.js';
+import { loadProjects } from './projects.js';
+let PROJECTS = [];
 
 const sections = ['projects','about','writings'];
 
@@ -194,7 +195,24 @@ function attachProjectItemEvents() {
   });
 }
 
-renderProjectGrid();
+(async () => {
+  projectList.innerHTML = '<p style="padding:2rem;opacity:0.4">Loading...</p>';
+  try {
+    PROJECTS = await loadProjects();
+  } catch(e) {
+    projectList.innerHTML = '<p style="padding:2rem;color:red">Failed to load projects. Check sheet URL.</p>';
+    console.error(e);
+    return;
+  }
+  renderProjectGrid();
+
+  // Initial routing from URL after projects load
+  const path = decodeURIComponent(location.pathname.slice(base.length));
+  if (path.startsWith('project/')) {
+    const id = parseInt(path.slice(8), 10);
+    if (!isNaN(id)) openProject(id, false);
+  }
+})();
 
 function openProject(id, push = true) {
   const p = PROJECTS[id];
@@ -391,14 +409,11 @@ function openWriting(id) {
 
 renderWritings();
 
-// Initial routing from URL
+// Initial routing from URL (project/ routing handled after loadProjects)
 {
   const path = decodeURIComponent(location.pathname.slice(base.length));
   if (path === 'about' || path === 'writings') {
     show(path, false);
-  } else if (path.startsWith('project/')) {
-    const id = parseInt(path.slice(8), 10);
-    if (!isNaN(id)) openProject(id, false);
   }
   history.replaceState(null, '', location.href);
 }
