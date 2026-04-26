@@ -113,23 +113,30 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function shuffle(items) {
-  return items
-    .map(item => ({ item, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ item }) => item);
-}
-
 function randomizeThumbnails(thumbnails) {
   const columns = 56;
-  return shuffle(thumbnails).map(t => {
-    const span = randomInt(8, 22);
-    const colStart = randomInt(1, columns - span + 1);
+  let row = 1;
+  let cursor = 1;
+
+  return thumbnails.map(t => {
+    const span = randomInt(8, 20);
+    const gap = randomInt(0, 5);
+    let colStart = cursor + gap;
+
+    if (colStart + span - 1 > columns) {
+      row += 1;
+      cursor = 1;
+      colStart = randomInt(1, 6);
+    }
+
+    cursor = colStart + span + randomInt(1, 5);
+
     return {
       ...t,
+      row,
       colStart,
       colEnd: colStart + span,
-      marginTop: randomInt(0, 18),
+      marginTop: randomInt(0, 8),
     };
   });
 }
@@ -203,7 +210,7 @@ function renderProjectGrid() {
       const imgSrc = assetUrl(t.image);
       const num = projectNumber(t.projectId);
       return `
-        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; margin-top: ${t.marginTop}vh;">
+        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; grid-row: ${t.row}; margin-top: ${t.marginTop}vh;">
           <img class="project-thumb" src="${imgSrc}" alt="${t.caption || p.title}" loading="lazy">
           <div class="project-info">
             <span class="project-number">${num}</span>
