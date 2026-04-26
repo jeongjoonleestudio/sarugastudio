@@ -96,13 +96,24 @@ function show(id, push = true) {
     document.getElementById(s).classList.remove('visible');
     document.getElementById('nav-' + s).classList.remove('active');
   });
+  document.getElementById('writings').classList.remove('writing-detail-open');
   document.getElementById(id).classList.add('visible');
   document.getElementById('nav-' + id).classList.add('active');
   window.scrollTo(0, 0);
 }
 
 function goHome() { show('projects'); }
-function goBack() { show('projects'); }
+function goBack() {
+  const writings = document.getElementById('writings');
+  if (writings.classList.contains('visible') && writings.classList.contains('writing-detail-open')) {
+    writings.classList.remove('writing-detail-open');
+    document.getElementById('navBack').classList.remove('visible');
+    document.getElementById('navLinks').style.display = '';
+    document.getElementById('writingsList').querySelectorAll('.writing-item').forEach(el => el.classList.remove('active'));
+    return;
+  }
+  show('projects');
+}
 
 window.show = show;
 window.goHome = goHome;
@@ -370,6 +381,12 @@ function openWriting(id) {
     </div>
   `;
   right.scrollTop = 0;
+
+  if (window.innerWidth <= 700) {
+    document.getElementById('writings').classList.add('writing-detail-open');
+    document.getElementById('navBack').classList.add('visible');
+    document.getElementById('navLinks').style.display = 'none';
+  }
 }
 
 renderWritings();

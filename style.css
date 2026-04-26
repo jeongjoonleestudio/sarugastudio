@@ -165,11 +165,38 @@ nav {
     padding: 1.5rem 1rem 4rem;
     min-height: auto;
   }
+  .project-item {
+    grid-column: 1 / -1 !important;
+    grid-row: auto !important;
+  }
   .project-info {
     position: relative;
     background: rgba(255,255,255,0.95);
     color: var(--black);
   }
+  /* 모바일에서는 리스트뷰를 무시하고 항상 그리드(썸네일) 형태 */
+  .project-list.list-view {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    flex-direction: unset;
+  }
+  .project-list.list-view .project-item {
+    flex-direction: column;
+    height: auto;
+    border-bottom: none;
+    padding: 0;
+  }
+  .project-list.list-view .project-thumb { display: block; }
+  .project-list.list-view .project-info {
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem 0 0;
+    border-left: none;
+    gap: 0;
+  }
+  .project-list.list-view .project-number { display: block; }
+  .project-list.list-view .project-meta { display: block; }
 }
 
 .project-controls {
@@ -521,16 +548,28 @@ footer { border-top: 1px solid var(--black); padding: 1.5rem 2rem; display: flex
 footer span { font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gray); text-transform: uppercase; }
 
 @media (max-width: 700px) {
+  .project-controls { display: none; }
   #detail.visible { flex-direction: column; }
   .detail-right { display: none; }
   .detail-resizer { display: none; }
   .detail-left { border-right: none; padding-right: 1.2rem; width: 100% !important; max-width: 100%; }
+  .detail-inner { max-width: 100%; }
   #writings.visible { flex-direction: column; }
   .writings-right { display: none; }
   .writings-resizer { display: none; }
   .writings-left { width: 100% !important; max-width: 100%; }
+  #writings.writing-detail-open .writings-left { display: none; }
+  #writings.writing-detail-open .writings-right {
+    display: block;
+    width: 100%;
+    height: calc(100vh - var(--nav-h));
+    overflow-y: auto;
+    padding: 3.5rem 1.2rem 6rem;
+    box-sizing: border-box;
+  }
   .hover-img { display: none; }
   .about-grid { grid-template-columns: 1fr; }
   nav { padding: 0 1.2rem; }
   .nav-links { gap: 1.5rem; }
+  #nav-projects { display: none; }
 }
