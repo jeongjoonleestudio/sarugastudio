@@ -113,30 +113,35 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function shuffle(items) {
+  return items
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+}
+
 function randomizeThumbnails(thumbnails) {
   const columns = 56;
   let row = 1;
   let cursor = 1;
 
-  return thumbnails.map(t => {
-    const span = randomInt(8, 20);
-    const gap = randomInt(0, 5);
-    let colStart = cursor + gap;
-
-    if (colStart + span - 1 > columns) {
+  return shuffle(thumbnails).map(t => {
+    if (columns - cursor + 1 < 8) {
       row += 1;
       cursor = 1;
-      colStart = randomInt(1, 6);
     }
 
-    cursor = colStart + span + randomInt(1, 5);
+    const colStart = cursor;
+    const span = Math.min(randomInt(8, 20), columns - colStart + 1);
+    const nextSpan = Math.max(span, 8);
+    cursor = colStart + nextSpan;
 
     return {
       ...t,
       row,
       colStart,
-      colEnd: colStart + span,
-      marginTop: randomInt(0, 8),
+      colEnd: colStart + nextSpan,
+      marginTop: randomInt(0, 3),
     };
   });
 }
