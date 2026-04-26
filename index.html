@@ -295,6 +295,31 @@ function attachProjectItemEvents() {
       hoverImg.classList.remove('visible');
       openProject(item.dataset.projectId);
     });
+
+    item.addEventListener('pointerenter', () => {
+      if (!projectList.classList.contains('list-view')) {
+        focusProjectThumbnails(item.dataset.projectId);
+      }
+    });
+  });
+
+  projectList.onpointerleave = clearProjectThumbnailFocus;
+  projectList.onpointermove = e => {
+    if (!e.target.closest('.project-item')) clearProjectThumbnailFocus();
+  };
+}
+
+function focusProjectThumbnails(projectId) {
+  projectList.classList.add('is-filtering');
+  document.querySelectorAll('.project-item').forEach(item => {
+    item.classList.toggle('is-same-project', item.dataset.projectId === projectId);
+  });
+}
+
+function clearProjectThumbnailFocus() {
+  projectList.classList.remove('is-filtering');
+  document.querySelectorAll('.project-item').forEach(item => {
+    item.classList.remove('is-same-project');
   });
 }
 
