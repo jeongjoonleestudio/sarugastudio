@@ -1,5 +1,0 @@
-id,title,year,type,location,grid_row,grid_col_start,grid_col_end,thumbnail,gallery
-mug,Museum of Unlimited Growth,2024,Education,"서대문구, 서울",1,1,13,assets/images/projects/mug/mug-thumbnail.png,assets/images/projects/mug/mug-model-1.jpg|assets/images/projects/mug/mug-thumbnail.png|assets/images/projects/mug/mug-render-1.jpg
-bukhansan-shelter,Bukhansan Shelter,2021,Public,"Bukhansan National Park, Seoul",1,24,32,assets/images/projects/mug/mug-model-1.jpg,assets/images/projects/bukhansan-shelter/detail-1.png
-yeonhui-studio,Yeonhui Studio,2020,Residential,"Seodaemun-gu, Seoul",1,42,54,assets/images/projects/mug/mug-render-1.jpg,assets/images/projects/yeonhui-studio/detail-1.png
-hello-world,Hello World,2020,Residential,"Seodaemun-gu, Seoul",2,12,21,assets/images/projects/hello-world/thumbnail.png,assets/images/projects/hello-world/detail-1.png
