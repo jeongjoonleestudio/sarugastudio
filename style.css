@@ -95,13 +95,12 @@ nav {
   padding: 2rem 0 6rem; /* 위 | 좌우 | 아래 */
   display: grid;
   grid-template-columns: repeat(56, 1fr);
-  grid-auto-rows: minmax(30rem, auto);
+  grid-auto-rows: minmax(33vw, auto);
   column-gap: 0;
   row-gap: 0;
   align-items: start;
   min-height: calc(100vh - var(--nav-h) - 4rem);
   width: 90vw;
-  max-width: 1800px;
   margin: 0 auto;
 }
 .project-item {
