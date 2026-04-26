@@ -113,10 +113,10 @@ nav {
   min-width: 0;
   background: transparent;
   cursor: crosshair;
-  transition: color 0.3s ease, background 0.2s ease;
+  transition: color 0.3s ease;
 }
 .project-item:hover {
-  background: rgba(0, 0, 0, 0.02);
+
 }
 .project-item:hover .project-title {
   color: #ff4fa0;
@@ -378,8 +378,6 @@ nav {
 
 .essay-img {
   width: 100%;
-  aspect-ratio: 3/2;
-  object-fit: cover;
   display: block;
   margin: 2.2rem 0 0.5rem;
 }

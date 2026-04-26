@@ -132,8 +132,8 @@ function renderProjectGrid() {
     const { row = 1, colStart = 1, colEnd = 13 } = project.layout || {};
     const thumb = project.thumbnail || project.gallery?.[0] || '';
     return `
-      <button class="project-item" type="button" data-id="${id}" data-img="${thumb}" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row};">
-        <img class="project-thumb" src="${thumb}" alt="${project.title}" loading="lazy">
+      <button class="project-item" type="button" data-id="${id}" data-img="${base + thumb}" style="grid-column: ${colStart} / ${colEnd}; grid-row: ${row};">
+        <img class="project-thumb" src="${base + thumb}" alt="${project.title}" loading="lazy">
         <div class="project-info">
           <span class="project-number">${String(id).padStart(2, '0')}</span>
           <span class="project-title">${project.title}</span>
@@ -211,14 +211,14 @@ function openProject(id, push = true) {
     if (b.kind === 'text') {
       L += `<div class="essay-block"><p>${b.content}</p></div>`;
     } else if (b.kind === 'img') {
-      L += `<img class="essay-img" src="${b.src}" alt="">`;
+      L += `<img class="essay-img" src="${b.src.startsWith('http') ? b.src : base + b.src}" alt="">`;
       if (b.caption) L += `<p class="essay-img-caption">${b.caption}</p>`;
     } else if (b.kind === 'pull') {
       L += `<blockquote class="essay-pull">${b.content}</blockquote>`;
     }
   });
 
-  const R = p.gallery.map(src => `<img class="gallery-img" src="${src}" alt="" loading="lazy">`).join('');
+  const R = p.gallery.map(src => `<img class="gallery-img" src="${base}${src}" alt="" loading="lazy">`).join('');
 
   document.getElementById('detailLeft').innerHTML  = `<div class="detail-inner">${L}</div>`;
   document.getElementById('detailRight').innerHTML = R;
