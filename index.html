@@ -455,6 +455,11 @@ renderWritings();
   history.replaceState(null, '', location.href);
 }
 
+// Prevent right-click on images
+document.addEventListener('contextmenu', e => {
+  if (e.target.tagName === 'IMG') e.preventDefault();
+});
+
 window.addEventListener('popstate', () => {
   const path = decodeURIComponent(location.pathname.slice(base.length));
   if (!path || path === 'projects') {
