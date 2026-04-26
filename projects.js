@@ -1,8 +1,8 @@
 export const PROJECTS = [
   {
-    title: '연희초등학교 리노베이션', year: '2024', type: 'Education', location: '서대문구, 서울',
-    layout: { row: 1, colStart: 1, colEnd: 10 },
-    thumbnail: 'assets/images/projects/saruga/thumbnail.png',
+    title: 'Museum of Unlimited Growth', year: '2024', type: 'Education', location: '서대문구, 서울',
+    layout: { row: 1, colStart: 1, colEnd: 12 },
+    thumbnail: 'assets/images/projects/mug/mug-thumbnail.jpg',
 
     essay: [
       { kind: 'text', content: '연희초등학교는 1970년대에 지어진 전형적인 공립 초등학교 건물이다. 낮고 어두운 복도, 교실마다 닫힌 문, 운동장을 등진 배치 — 이 학교의 공간은 수십 년 동안 아이들에게 무언가를 가르쳐왔다. 열려 있어서는 안 된다는 것, 스스로 움직이지 말아야 한다는 것을. 우리가 받은 의뢰는 리노베이션이었지만, 실제 질문은 달랐다: 이 건물이 어떤 태도를 가르치길 원하는가.' },
@@ -10,8 +10,8 @@ export const PROJECTS = [
       { kind: 'text', content: 'The solution is a 2.8-meter wall in textured concrete, angled slightly inward at the top to deflect sound and direct rainwater into a narrow channel running along its base. Moss will colonize the north face over time. On the interior side, a steel trellis carries three species of climbing plant chosen to offer color in every season.' },
     ],
     gallery: [
-      'assets/images/projects/saruga/detail-1.png',
-      'assets/images/projects/saruga/detail-2.png',
+      'assets/images/projects/mug/mug-render-1.png',
+      'assets/images/projects/mug/mug-thumbnail.jpg'
     ]
   },
   {
