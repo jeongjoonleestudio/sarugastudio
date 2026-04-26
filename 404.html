@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>studio saruga</title>
+<script>
+(function () {
+  var path = window.location.pathname;
+  var search = window.location.search || '';
+  var hash = window.location.hash || '';
+  var markers = ['/project/', '/about', '/writings'];
+  var base = '/';
+  var route = path.replace(/^\/+/, '');
+
+  for (var i = 0; i < markers.length; i++) {
+    var idx = path.indexOf(markers[i]);
+    if (idx !== -1) {
+      base = path.slice(0, idx + 1);
+      route = path.slice(idx + 1);
+      break;
+    }
+  }
+
+  var target = base + '?route=' + encodeURIComponent(route) + search.replace(/^\?/, '&') + hash;
+  window.location.replace(target);
+})();
+</script>
+</head>
+<body></body>
+</html>

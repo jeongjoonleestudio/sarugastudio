@@ -86,8 +86,19 @@ const sections = ['projects','about','writings'];
 
 const base = (() => {
   const p = location.pathname;
+  const projectIdx = p.indexOf('/project/');
+  if (projectIdx !== -1) return p.slice(0, projectIdx + 1);
+  if (p.endsWith('/about')) return p.slice(0, -'about'.length);
+  if (p.endsWith('/writings')) return p.slice(0, -'writings'.length);
   return p.endsWith('/') ? p : p.substring(0, p.lastIndexOf('/') + 1);
 })();
+
+function currentRoute() {
+  const params = new URLSearchParams(location.search);
+  const redirectedRoute = params.get('route');
+  if (redirectedRoute) return redirectedRoute.replace(/^\/+/, '');
+  return decodeURIComponent(location.pathname.slice(base.length));
+}
 
 function assetUrl(src) {
   return src.startsWith('http') ? src : encodeURI(base + src);
@@ -242,7 +253,7 @@ function attachProjectItemEvents() {
   renderProjectGrid();
 
   // Initial routing from URL after projects load
-  const path = decodeURIComponent(location.pathname.slice(base.length));
+  const path = currentRoute();
   if (path.startsWith('project/')) {
     const projectId = path.slice(8);
     if (projectId) openProject(projectId, false);
@@ -452,11 +463,15 @@ renderWritings();
 
 // Initial routing from URL (project/ routing handled after loadProjects)
 {
-  const path = decodeURIComponent(location.pathname.slice(base.length));
+  const path = currentRoute();
   if (path === 'about' || path === 'writings') {
     show(path, false);
   }
-  history.replaceState(null, '', location.href);
+  if (location.search) {
+    history.replaceState(null, '', base + (path || ''));
+  } else {
+    history.replaceState(null, '', location.href);
+  }
 }
 
 // Prevent right-click on images
@@ -465,7 +480,7 @@ document.addEventListener('contextmenu', e => {
 });
 
 window.addEventListener('popstate', () => {
-  const path = decodeURIComponent(location.pathname.slice(base.length));
+  const path = currentRoute();
   if (!path || path === 'projects') {
     show('projects', false);
   } else if (path === 'about' || path === 'writings') {
