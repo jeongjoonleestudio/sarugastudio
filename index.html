@@ -230,6 +230,7 @@ function renderProjectGrid() {
 }
 
 function fitProjectThumbs() {
+  if (window.innerWidth <= 700) return;
   document.querySelectorAll('.project-thumb').forEach(img => {
     const applySize = () => {
       if (!img.naturalWidth || !img.naturalHeight) return;
@@ -297,15 +298,15 @@ function attachProjectItemEvents() {
     });
 
     item.addEventListener('pointerenter', () => {
-      if (!projectList.classList.contains('list-view')) {
+      if (!projectList.classList.contains('list-view') && window.innerWidth > 700) {
         focusProjectThumbnails(item.dataset.projectId);
       }
     });
   });
 
-  projectList.onpointerleave = clearProjectThumbnailFocus;
+  projectList.onpointerleave = () => { if (window.innerWidth > 700) clearProjectThumbnailFocus(); };
   projectList.onpointermove = e => {
-    if (!e.target.closest('.project-item')) clearProjectThumbnailFocus();
+    if (window.innerWidth > 700 && !e.target.closest('.project-item')) clearProjectThumbnailFocus();
   };
 }
 
@@ -366,10 +367,14 @@ function openProject(projectId, push = true) {
     }
   });
 
-  const R = p.gallery.map(g => {
+  const R = p.gallery.map((g, i) => {
     const src = assetUrl(g.src);
+    const num = String(i + 1).padStart(2, '0');
     return `<figure class="gallery-figure">
-      <img class="gallery-img" src="${src}" alt="${g.caption || ''}" loading="lazy">
+      <div class="gallery-img-row">
+        <img class="gallery-img" src="${src}" alt="${g.caption || ''}" loading="lazy">
+        <span class="gallery-num">${num}</span>
+      </div>
       ${g.caption ? `<figcaption class="gallery-caption">${g.caption}</figcaption>` : ''}
     </figure>`;
   }).join('');
