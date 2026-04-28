@@ -14,7 +14,7 @@ img {
   --serif: var(--sans);
   --mono: var(--sans);
   --nav-h: 56px;
-  --thumb-h: clamp(160px, 18vw, 300px);
+  --thumb-h: 220px;
   --thumb-max-w: min(38vw, 720px);
 }
 html { font-size: 16px; }
@@ -97,9 +97,10 @@ nav {
   padding: 2rem 0 6rem; /* 위 | 좌우 | 아래 */
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
-  column-gap: 38px;
-  row-gap: clamp(1.8rem, 2.4vw, 3rem);
+  align-items: flex-end;
+  align-content: flex-start;
+  column-gap: clamp(22px, 3.6vw, 64px);
+  row-gap: clamp(3rem, 6vw, 7rem);
   min-height: calc(100vh - var(--nav-h) - 4rem);
   width: 90vw;
   margin: 0 auto;
@@ -148,7 +149,7 @@ nav {
   max-width: var(--thumb-max-w);
   height: var(--thumb-h);
   object-fit: contain;
-  object-position: left top;
+  object-position: left bottom;
   display: block;
 }
 /* 각 카드 내부 여백 */

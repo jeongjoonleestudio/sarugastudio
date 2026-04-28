@@ -121,29 +121,10 @@ function shuffle(items) {
 }
 
 function randomizeThumbnails(thumbnails) {
-  const columns = 56;
-  let row = 1;
-  let cursor = 1;
-
-  return shuffle(thumbnails).map(t => {
-    if (columns - cursor + 1 < 8) {
-      row += 1;
-      cursor = 1;
-    }
-
-    const colStart = cursor;
-    const span = Math.min(randomInt(8, 20), columns - colStart + 1);
-    const nextSpan = Math.max(span, 8);
-    cursor = colStart + nextSpan;
-
-    return {
-      ...t,
-      row,
-      colStart,
-      colEnd: colStart + nextSpan,
-      marginTop: 0,
-    };
-  });
+  return shuffle(thumbnails).map(t => ({
+    ...t,
+    thumbHeight: randomInt(120, 320),
+  }));
 }
 
 function show(id, push = true) {
@@ -215,7 +196,7 @@ function renderProjectGrid() {
       const imgSrc = assetUrl(t.image);
       const num = projectNumber(t.projectId);
       return `
-        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="grid-column: ${t.colStart} / ${t.colEnd}; grid-row: ${t.row}; margin-top: ${t.marginTop}vh;">
+        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="--thumb-h: ${t.thumbHeight}px;">
           <img class="project-thumb" src="${imgSrc}" alt="${t.caption || p.title}" loading="lazy">
           <div class="project-info">
             <span class="project-number">${num}</span>
