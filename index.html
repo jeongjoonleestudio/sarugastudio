@@ -215,7 +215,7 @@ function renderProjectGrid() {
       const fixedThumbHeight = thumbSizeFromFilename(t);
       const thumbHeight = fixedThumbHeight || t.thumbHeight;
       return `
-        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="--thumb-h: ${thumbHeight}px;">
+        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" data-fixed-size="${fixedThumbHeight ? 'true' : 'false'}" style="--thumb-h: ${thumbHeight}px;">
           <img class="project-thumb" src="${imgSrc}" alt="${t.caption || p.title}" loading="lazy">
           <div class="project-info">
             <span class="project-number">${num}</span>
@@ -274,7 +274,7 @@ function fitProjectRows() {
     row.items.push({ item, img });
   });
 
-  rows.forEach(row => {
+  rows.slice(0, -1).forEach(row => {
     if (row.items.length < 2) return;
 
     const rowWidth = row.items.reduce((sum, { img }) => {
@@ -282,10 +282,22 @@ function fitProjectRows() {
     }, gap * (row.items.length - 1));
     if (!rowWidth || rowWidth >= contentWidth - 1) return;
 
-    const scale = Math.min(contentWidth / rowWidth, 1.35);
+    const flexibleItems = row.items.filter(({ item }) => item.dataset.fixedSize !== 'true');
+    if (!flexibleItems.length) return;
+
+    const fixedWidth = row.items
+      .filter(({ item }) => item.dataset.fixedSize === 'true')
+      .reduce((sum, { img }) => sum + img.getBoundingClientRect().width, 0);
+    const flexibleWidth = flexibleItems.reduce((sum, { img }) => {
+      return sum + img.getBoundingClientRect().width;
+    }, 0);
+    const targetFlexibleWidth = contentWidth - fixedWidth - gap * (row.items.length - 1);
+    if (targetFlexibleWidth <= flexibleWidth) return;
+
+    const scale = Math.min(targetFlexibleWidth / flexibleWidth, 2.2);
     if (scale <= 1.02) return;
 
-    row.items.forEach(({ img }) => {
+    flexibleItems.forEach(({ img }) => {
       const nextHeight = img.getBoundingClientRect().height * scale;
       fitProjectThumb(img, nextHeight);
     });
