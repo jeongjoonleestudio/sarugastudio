@@ -153,6 +153,7 @@ function show(id, push = true) {
   document.getElementById('writings').classList.remove('writing-detail-open');
   document.getElementById(id).classList.add('visible');
   document.getElementById('nav-' + id).classList.add('active');
+  if (id === 'projects') clearProjectThumbnailFocus();
   window.scrollTo(0, 0);
 }
 
@@ -180,6 +181,7 @@ let isDraggingToggle = false;
 let dragMoved = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
+let focusedProjectId = null;
 
 function renderProjectGrid() {
   const isList = projectList.classList.contains('list-view');
@@ -297,23 +299,33 @@ function attachProjectItemEvents() {
   document.querySelectorAll('.project-item').forEach(item => {
     item.addEventListener('click', () => {
       hoverImg.classList.remove('visible');
-      openProject(item.dataset.projectId);
-    });
+      const projectId = item.dataset.projectId;
 
-    item.addEventListener('pointerenter', () => {
-      if (!projectList.classList.contains('list-view') && window.innerWidth > 700) {
-        focusProjectThumbnails(item.dataset.projectId);
+      if (projectList.classList.contains('list-view')) {
+        openProject(projectId);
+        return;
       }
+
+      if (focusedProjectId === projectId) {
+        focusedProjectId = null;
+        openProject(projectId);
+        return;
+      }
+
+      focusProjectThumbnails(projectId);
     });
   });
 
-  projectList.onpointerleave = () => { if (window.innerWidth > 700) clearProjectThumbnailFocus(); };
-  projectList.onpointermove = e => {
-    if (window.innerWidth > 700 && !e.target.closest('.project-item')) clearProjectThumbnailFocus();
+  projectList.onpointerleave = null;
+  projectList.onpointermove = null;
+  projectList.onclick = e => {
+    if (!focusedProjectId || e.target.closest('.project-item')) return;
+    clearProjectThumbnailFocus();
   };
 }
 
 function focusProjectThumbnails(projectId) {
+  focusedProjectId = projectId;
   projectList.classList.add('is-filtering');
   document.querySelectorAll('.project-item').forEach(item => {
     item.classList.toggle('is-same-project', item.dataset.projectId === projectId);
@@ -321,6 +333,7 @@ function focusProjectThumbnails(projectId) {
 }
 
 function clearProjectThumbnailFocus() {
+  focusedProjectId = null;
   projectList.classList.remove('is-filtering');
   document.querySelectorAll('.project-item').forEach(item => {
     item.classList.remove('is-same-project');
