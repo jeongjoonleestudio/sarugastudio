@@ -94,7 +94,7 @@ nav {
 #projects { position: relative; padding-top: calc(var(--nav-h) + 5vh); }
 /* 프로젝트 그리드 전체 여백 */
 .project-list {
-  padding: 12px 12px 6rem;
+  padding: 24px 24px 6rem;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
