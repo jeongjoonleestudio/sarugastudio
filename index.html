@@ -123,7 +123,7 @@ function shuffle(items) {
 function randomizeThumbnails(thumbnails) {
   return shuffle(thumbnails).map(t => ({
     ...t,
-    thumbHeight: randomInt(120, 320),
+    thumbHeight: randomInt(120, 480),
   }));
 }
 

@@ -15,7 +15,7 @@ img {
   --mono: var(--sans);
   --nav-h: 56px;
   --thumb-h: 220px;
-  --thumb-max-w: min(38vw, 720px);
+  --thumb-max-w: min(57vw, 1080px);
 }
 html { font-size: 16px; }
 body {
