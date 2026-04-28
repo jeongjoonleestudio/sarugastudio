@@ -83,6 +83,9 @@ let PROJECTS = {};
 let THUMBNAILS = [];
 
 const sections = ['projects','about','writings'];
+const THUMB_RANDOM_MIN = 120;
+const THUMB_RANDOM_MAX = 480;
+const DRAWING_THUMB_HEIGHT = THUMB_RANDOM_MAX;
 
 const base = (() => {
   const p = location.pathname;
@@ -123,8 +126,13 @@ function shuffle(items) {
 function randomizeThumbnails(thumbnails) {
   return shuffle(thumbnails).map(t => ({
     ...t,
-    thumbHeight: randomInt(120, 480),
+    thumbHeight: randomInt(THUMB_RANDOM_MIN, THUMB_RANDOM_MAX),
   }));
+}
+
+function looksLikeDrawingByText(thumbnail) {
+  const filename = (thumbnail.image || '').split('/').pop().toLowerCase();
+  return /\b(plan|section|elevation|drawing)\b/.test(filename);
 }
 
 function show(id, push = true) {
@@ -195,8 +203,10 @@ function renderProjectGrid() {
       if (!p) return '';
       const imgSrc = assetUrl(t.image);
       const num = projectNumber(t.projectId);
+      const isLikelyDrawing = looksLikeDrawingByText(t);
+      const thumbHeight = isLikelyDrawing ? DRAWING_THUMB_HEIGHT : t.thumbHeight;
       return `
-        <button class="project-item" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="--thumb-h: ${t.thumbHeight}px;">
+        <button class="project-item ${isLikelyDrawing ? 'is-line-drawing' : ''}" type="button" data-project-id="${t.projectId}" data-img="${imgSrc}" style="--thumb-h: ${thumbHeight}px;">
           <img class="project-thumb" src="${imgSrc}" alt="${t.caption || p.title}" loading="lazy">
           <div class="project-info">
             <span class="project-number">${num}</span>
@@ -210,18 +220,24 @@ function renderProjectGrid() {
   fitProjectThumbs();
 }
 
+function fitProjectThumb(img) {
+  if (window.innerWidth <= 700) return;
+  if (!img.naturalWidth || !img.naturalHeight) return;
+
+  const styles = getComputedStyle(img);
+  const thumbHeight = img.getBoundingClientRect().height;
+  const maxWidth = parseFloat(styles.maxWidth) || window.innerWidth;
+  const width = Math.min((img.naturalWidth / img.naturalHeight) * thumbHeight, maxWidth);
+
+  img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+  img.style.width = `${width}px`;
+}
+
 function fitProjectThumbs() {
   if (window.innerWidth <= 700) return;
   document.querySelectorAll('.project-thumb').forEach(img => {
     const applySize = () => {
-      if (!img.naturalWidth || !img.naturalHeight) return;
-      const styles = getComputedStyle(img);
-      const thumbHeight = img.getBoundingClientRect().height;
-      const maxWidth = parseFloat(styles.maxWidth) || window.innerWidth;
-      const width = Math.min((img.naturalWidth / img.naturalHeight) * thumbHeight, maxWidth);
-
-      img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
-      img.style.width = `${width}px`;
+      fitProjectThumb(img);
     };
 
     if (img.complete) applySize();
