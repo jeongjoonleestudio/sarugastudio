@@ -182,6 +182,7 @@ let dragMoved = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 let focusedProjectId = null;
+let rowFitFrame = null;
 
 function renderProjectGrid() {
   const isList = projectList.classList.contains('list-view');
@@ -228,12 +229,13 @@ function renderProjectGrid() {
   fitProjectThumbs();
 }
 
-function fitProjectThumb(img) {
+function fitProjectThumb(img, height = null) {
   if (window.innerWidth <= 700) return;
   if (!img.naturalWidth || !img.naturalHeight) return;
 
+  img.style.height = height ? `${height}px` : '';
   const styles = getComputedStyle(img);
-  const thumbHeight = img.getBoundingClientRect().height;
+  const thumbHeight = height || img.getBoundingClientRect().height;
   const maxWidth = parseFloat(styles.maxWidth) || window.innerWidth;
   const width = Math.min((img.naturalWidth / img.naturalHeight) * thumbHeight, maxWidth);
 
@@ -241,11 +243,61 @@ function fitProjectThumb(img) {
   img.style.width = `${width}px`;
 }
 
+function scheduleFitProjectRows() {
+  if (rowFitFrame) cancelAnimationFrame(rowFitFrame);
+  rowFitFrame = requestAnimationFrame(() => {
+    rowFitFrame = null;
+    fitProjectRows();
+  });
+}
+
+function fitProjectRows() {
+  if (window.innerWidth <= 700 || projectList.classList.contains('list-view')) return;
+
+  const styles = getComputedStyle(projectList);
+  const gap = parseFloat(styles.columnGap) || 0;
+  const contentWidth = projectList.clientWidth
+    - (parseFloat(styles.paddingLeft) || 0)
+    - (parseFloat(styles.paddingRight) || 0);
+  const rows = [];
+
+  document.querySelectorAll('.project-item').forEach(item => {
+    const img = item.querySelector('.project-thumb');
+    if (!img || !img.naturalWidth || !img.naturalHeight) return;
+
+    const top = Math.round(item.offsetTop);
+    let row = rows.find(r => Math.abs(r.top - top) < 3);
+    if (!row) {
+      row = { top, items: [] };
+      rows.push(row);
+    }
+    row.items.push({ item, img });
+  });
+
+  rows.forEach(row => {
+    if (row.items.length < 2) return;
+
+    const rowWidth = row.items.reduce((sum, { img }) => {
+      return sum + img.getBoundingClientRect().width;
+    }, gap * (row.items.length - 1));
+    if (!rowWidth || rowWidth >= contentWidth - 1) return;
+
+    const scale = Math.min(contentWidth / rowWidth, 1.35);
+    if (scale <= 1.02) return;
+
+    row.items.forEach(({ img }) => {
+      const nextHeight = img.getBoundingClientRect().height * scale;
+      fitProjectThumb(img, nextHeight);
+    });
+  });
+}
+
 function fitProjectThumbs() {
   if (window.innerWidth <= 700) return;
   document.querySelectorAll('.project-thumb').forEach(img => {
     const applySize = () => {
       fitProjectThumb(img);
+      scheduleFitProjectRows();
     };
 
     if (img.complete) applySize();
