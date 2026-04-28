@@ -185,9 +185,13 @@ nav {
 @media (max-width: 700px) {
   .project-list {
     display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    padding: 1.5rem 0 4rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    align-content: flex-start;
+    column-gap: 24px;
+    row-gap: 24px;
+    padding: 24px 24px 4rem;
     min-height: auto;
   }
   .project-item {
@@ -195,14 +199,15 @@ nav {
     grid-row: unset !important;
     margin-top: 0 !important;
     height: auto;
-    width: 100%;
+    width: calc((100% - 24px) / 2);
+    flex: 0 0 calc((100% - 24px) / 2);
   }
   .project-thumb {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-    object-fit: cover;
-    object-position: center;
+    object-fit: contain;
+    object-position: left bottom;
   }
   .project-info {
     position: relative;
