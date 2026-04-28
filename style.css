@@ -8,7 +8,7 @@ img {
 }
 :root {
   --black: #050505;
-  --white: #ffffff;
+  --white: #e0e0e0;
   --gray: #666;
   --sans: Arial, Helvetica, sans-serif;
   --serif: var(--sans);
@@ -205,7 +205,7 @@ nav {
   }
   .project-info {
     position: relative;
-    background: rgba(255,255,255,0.95);
+    background: rgba(224,224,224,0.95);
     color: var(--black);
     padding-left: 1rem;
   }
@@ -283,11 +283,11 @@ nav {
   justify-content: space-between;
   padding: 1.4rem 1rem;
   border: 1px solid rgba(0,0,0,0.08);
-  background: #fff;
+  background: var(--white);
   margin-top: 0 !important;
 }
 .project-list.list-view .project-item:hover {
-  background: #fafafa;
+  background: #d8d8d8;
 }
 .project-list.list-view .project-thumb {
   display: none;
