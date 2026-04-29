@@ -80,8 +80,12 @@
   <span>Seoul, Korea</span>
 </footer>
 
+<div id="cursorTriangle" aria-hidden="true">
+  <svg width="24" height="24" viewBox="0 0 24 24"><polygon points="12,3 22,21 2,21" fill="white"/></svg>
+</div>
+
 <script type="module">
-import { loadData, loadHomeInfoText } from './projects.js?v=20260429-3';
+import { loadData, loadHomeInfoText, loadWritings } from './projects.js?v=20260429-5';
 let PROJECTS = {};
 let THUMBNAILS = [];
 
@@ -139,6 +143,12 @@ function randomizeThumbnails(thumbnails) {
 }
 
 function thumbSizeFromFilename(thumbnail) {
+  if (thumbnail.size) {
+    const s = thumbnail.size.trim().toUpperCase();
+    if (THUMB_SIZE_HEIGHTS[s]) return THUMB_SIZE_HEIGHTS[s];
+    const n = parseInt(s);
+    if (!isNaN(n) && n > 0) return n;
+  }
   const filename = (thumbnail.image || '').split('/').pop().toLowerCase();
   const match = filename.match(/^\[(s|m|l|xl)\]/i);
   return match ? THUMB_SIZE_HEIGHTS[match[1].toUpperCase()] : null;
@@ -557,8 +567,8 @@ document.addEventListener('mousemove', e => {
   hoverImg.style.top  = y + 'px';
 });
 
-// WRITINGS DATA
-const WRITINGS = [
+// WRITINGS DATA (fallback — replaced by Google Sheets data when available)
+const WRITINGS_FALLBACK = [
   {
     title: 'On the Thickness of Walls',
     date: '2024. 11',
@@ -608,6 +618,7 @@ const WRITINGS = [
     ]
   }
 ];
+let WRITINGS = WRITINGS_FALLBACK;
 
 function renderWritings() {
   const list = document.getElementById('writingsList');
@@ -640,7 +651,7 @@ function openWriting(id) {
       <p class="writing-detail-meta">${w.date}</p>
     </div>
     <div class="writing-detail-body">
-      ${w.content.map(p => `<p>${p}</p>`).join('')}
+      ${w.content.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('')}
     </div>
   `;
   right.scrollTop = 0;
@@ -653,6 +664,13 @@ function openWriting(id) {
 }
 
 renderWritings();
+(async () => {
+  const sheetsWritings = await loadWritings();
+  if (sheetsWritings) {
+    WRITINGS = sheetsWritings;
+    renderWritings();
+  }
+})();
 
 // Initial routing from URL (project/ routing handled after loadProjects)
 {
@@ -711,6 +729,14 @@ document.addEventListener('mouseup', () => {
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
 });
+
+const cursorTriangle = document.getElementById('cursorTriangle');
+document.addEventListener('mousemove', e => {
+  cursorTriangle.style.left = e.clientX + 'px';
+  cursorTriangle.style.top  = e.clientY + 'px';
+  cursorTriangle.classList.toggle('visible', !!e.target.closest('.project-item'));
+});
+document.addEventListener('mouseleave', () => cursorTriangle.classList.remove('visible'));
 
 </script>
 </body>

@@ -2,12 +2,15 @@ const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7Sx0nBAzKC3ZC-p
 
 // projects tab:   id | title | year | type | location
 // essay tab:      project_id | order | kind | content | image_src | image_caption  (kind: text | img | pull)
-// gallery tab:    project_id | order | image_src | image_caption
+// gallery tab:    project_id | order | image_src | image_caption | size  (size: S/M/L/XL 또는 숫자px, 비워두면 랜덤)
 // home_info tab:  content
+// writings tab: order | title | date | desc | content
+//   (content 셀 안에서 Alt+Enter로 줄바꿈, 단락은 빈 줄로 구분)
 const PROJECTS_URL   = SHEET + '?gid=1246029181&single=true&output=csv';
 const ESSAY_URL      = SHEET + '?gid=908161552&single=true&output=csv';
 const GALLERY_URL    = SHEET + '?gid=1090780484&single=true&output=csv';
 const HOME_INFO_URL  = SHEET + '?gid=1332433738&single=true&output=csv';
+const WRITINGS_URL   = SHEET + '?gid=1983460413&single=true&output=csv';
 const HOME_INFO_FALLBACK = 'Studio Saruga\nSeoul, Korea';
 
 function uncached(url) {
@@ -92,6 +95,7 @@ export async function loadData() {
       projectId: g.project_id,
       image: g.image_src,
       caption: g.image_caption,
+      size: g.size || '',
     }));
 
   return { projects, thumbnails };
@@ -120,5 +124,29 @@ export async function loadHomeInfoText() {
   } catch (err) {
     console.warn(err);
     return HOME_INFO_FALLBACK;
+  }
+}
+
+export async function loadWritings() {
+  try {
+    const res = await fetch(uncached(WRITINGS_URL));
+    if (!res.ok) throw new Error('Writings fetch failed');
+
+    const writings = toObjects(parseCSV(await res.text()))
+      .sort((a, b) => parseInt(a.order) - parseInt(b.order))
+      .map(w => ({
+        title:   w.title,
+        date:    w.date,
+        desc:    w.desc,
+        content: (w.content || '')
+          .split(/\n\n+/)
+          .map(p => p.trim())
+          .filter(Boolean),
+      }));
+
+    return writings.length > 0 ? writings : null;
+  } catch (err) {
+    console.warn(err);
+    return null;
   }
 }
