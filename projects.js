@@ -3,9 +3,12 @@ const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7Sx0nBAzKC3ZC-p
 // projects tab:   id | title | year | type | location
 // essay tab:      project_id | order | kind | content | image_src | image_caption  (kind: text | img | pull)
 // gallery tab:    project_id | order | image_src | image_caption
+// home_info tab:  content
 const PROJECTS_URL   = SHEET + '?gid=1246029181&single=true&output=csv';
 const ESSAY_URL      = SHEET + '?gid=908161552&single=true&output=csv';
 const GALLERY_URL    = SHEET + '?gid=1090780484&single=true&output=csv';
+const HOME_INFO_URL  = SHEET + '?sheet=home_info&single=true&output=csv';
+const HOME_INFO_FALLBACK = 'Studio Saruga\nSeoul, Korea';
 
 function uncached(url) {
   return url + '&v=' + Date.now();
@@ -92,4 +95,30 @@ export async function loadData() {
     }));
 
   return { projects, thumbnails };
+}
+
+export async function loadHomeInfoText() {
+  try {
+    const res = await fetch(uncached(HOME_INFO_URL));
+    if (!res.ok) throw new Error(`Failed to load home info: ${res.status}`);
+
+    const rows = toObjects(parseCSV(await res.text()));
+    if (rows.length === 0) return HOME_INFO_FALLBACK;
+
+    const first = rows[0];
+    const direct = first.content || first.text || first.message || first.value;
+    if (direct) return direct;
+
+    if (Object.keys(first).length === 1) {
+      return rows
+        .map(row => Object.values(row).find(value => value))
+        .filter(Boolean)
+        .join('\n');
+    }
+
+    return HOME_INFO_FALLBACK;
+  } catch (err) {
+    console.warn(err);
+    return HOME_INFO_FALLBACK;
+  }
 }

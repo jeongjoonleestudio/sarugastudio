@@ -31,7 +31,10 @@
 <!-- PROJECTS LIST -->
 <section class="section visible" id="projects">
   <div class="project-controls">
-    <button type="button" class="view-toggle" id="viewToggle" aria-label="Toggle project view"></button>
+    <button type="button" class="view-toggle" id="viewToggle" aria-label="Open home note" aria-expanded="false" aria-controls="homeInfoPanel"></button>
+    <div class="home-info-panel" id="homeInfoPanel" aria-live="polite">
+      <p id="homeInfoText">Loading...</p>
+    </div>
   </div>
   <div class="project-list">
 </div>
@@ -78,7 +81,7 @@
 </footer>
 
 <script type="module">
-import { loadData } from './projects.js';
+import { loadData, loadHomeInfoText } from './projects.js';
 let PROJECTS = {};
 let THUMBNAILS = [];
 
@@ -177,12 +180,15 @@ window.goBack = goBack;
 const projectList = document.querySelector('.project-list');
 const viewToggle = document.getElementById('viewToggle');
 const projectControls = document.querySelector('.project-controls');
+const homeInfoPanel = document.getElementById('homeInfoPanel');
+const homeInfoText = document.getElementById('homeInfoText');
 let isDraggingToggle = false;
 let dragMoved = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
 let focusedProjectId = null;
 let rowFitFrame = null;
+let isHomeInfoOpen = false;
 
 function renderProjectGrid() {
   const isList = projectList.classList.contains('list-view');
@@ -325,6 +331,12 @@ function setProjectView(isList) {
   if (Object.keys(PROJECTS).length > 0) renderProjectGrid();
 }
 
+function setHomeInfoOpen(isOpen) {
+  isHomeInfoOpen = isOpen;
+  projectControls.classList.toggle('is-open', isOpen);
+  viewToggle.setAttribute('aria-expanded', String(isOpen));
+}
+
 viewToggle.addEventListener('pointerdown', e => {
   isDraggingToggle = true;
   dragMoved = false;
@@ -353,11 +365,20 @@ document.addEventListener('pointerup', e => {
   document.body.style.userSelect = '';
   try { viewToggle.releasePointerCapture(e.pointerId); } catch (err) {}
   if (!dragMoved) {
-    setProjectView(!projectList.classList.contains('list-view'));
+    setHomeInfoOpen(!isHomeInfoOpen);
   }
 });
 
 setProjectView(false);
+
+document.addEventListener('click', e => {
+  if (!isHomeInfoOpen || projectControls.contains(e.target)) return;
+  setHomeInfoOpen(false);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') setHomeInfoOpen(false);
+});
 
 function attachProjectItemEvents() {
   document.querySelectorAll('.project-item').forEach(item => {
@@ -410,6 +431,7 @@ function clearProjectThumbnailFocus() {
     const data = await loadData();
     PROJECTS   = data.projects;
     THUMBNAILS = randomizeThumbnails(data.thumbnails);
+    homeInfoText.textContent = await loadHomeInfoText();
   } catch(e) {
     projectList.innerHTML = '<p style="padding:2rem;color:red">Failed to load projects. Check sheet URL.</p>';
     console.error(e);
