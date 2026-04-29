@@ -81,7 +81,7 @@
 </footer>
 
 <script type="module">
-import { loadData, loadHomeInfoText } from './projects.js';
+import { loadData, loadHomeInfoText } from './projects.js?v=20260429-2';
 let PROJECTS = {};
 let THUMBNAILS = [];
 
@@ -431,13 +431,15 @@ function clearProjectThumbnailFocus() {
     const data = await loadData();
     PROJECTS   = data.projects;
     THUMBNAILS = randomizeThumbnails(data.thumbnails);
-    homeInfoText.textContent = await loadHomeInfoText();
   } catch(e) {
     projectList.innerHTML = '<p style="padding:2rem;color:red">Failed to load projects. Check sheet URL.</p>';
     console.error(e);
     return;
   }
   renderProjectGrid();
+  loadHomeInfoText().then(text => {
+    homeInfoText.textContent = text;
+  });
 
   // Initial routing from URL after projects load
   const path = currentRoute();

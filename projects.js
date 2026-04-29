@@ -7,7 +7,7 @@ const SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT7Sx0nBAzKC3ZC-p
 const PROJECTS_URL   = SHEET + '?gid=1246029181&single=true&output=csv';
 const ESSAY_URL      = SHEET + '?gid=908161552&single=true&output=csv';
 const GALLERY_URL    = SHEET + '?gid=1090780484&single=true&output=csv';
-const HOME_INFO_URL  = SHEET + '?sheet=home_info&single=true&output=csv';
+const HOME_INFO_TAB  = 'home_info';
 const HOME_INFO_FALLBACK = 'Studio Saruga\nSeoul, Korea';
 
 function uncached(url) {
@@ -40,6 +40,21 @@ function toObjects(rows) {
   return rows.slice(1)
     .filter(r => r.some(c => c.trim()))
     .map(r => Object.fromEntries(headers.map((h, i) => [h, (r[i] || '').trim()])));
+}
+
+async function sheetGidByName(sheetName) {
+  const res = await fetch(uncached(SHEET + 'html'));
+  if (!res.ok) throw new Error(`Failed to load sheet list: ${res.status}`);
+
+  const html = await res.text();
+  const sheetPattern = /items\.push\(\{name:\s*"([^"]+)".*?gid:\s*"(-?\d+)"/g;
+  let match;
+  while ((match = sheetPattern.exec(html))) {
+    const name = match[1].replace(/\\"/g, '"');
+    if (name.toLowerCase() === sheetName.toLowerCase()) return match[2];
+  }
+
+  throw new Error(`Published sheet tab not found: ${sheetName}`);
 }
 
 export async function loadData() {
@@ -99,7 +114,8 @@ export async function loadData() {
 
 export async function loadHomeInfoText() {
   try {
-    const res = await fetch(uncached(HOME_INFO_URL));
+    const gid = await sheetGidByName(HOME_INFO_TAB);
+    const res = await fetch(uncached(`${SHEET}?gid=${gid}&single=true&output=csv`));
     if (!res.ok) throw new Error(`Failed to load home info: ${res.status}`);
 
     const rows = toObjects(parseCSV(await res.text()));
